@@ -1,0 +1,19 @@
+dependencies {
+	compileOnly group: "com.liferay.portal", name: "release.portal.api"
+
+	cssBuilder group: "com.liferay", name: "com.liferay.css.builder", version: "3.0.2"
+
+	compileOnly group: "com.liferay.commerce", name: "com.liferay.commerce.api", version: "22.2.4"
+	compileOnly group: "com.liferay.commerce", name: "com.liferay.commerce.product.api", version: "29.3.0"
+	compileOnly group: 'com.liferay.commerce', name: 'com.liferay.commerce.product.definitions.web', version: "6.0.21"
+	compileOnly group: "com.liferay.commerce", name: "com.liferay.commerce.product.content.api", version: "5.0.5"
+	compileOnly group: "com.liferay.commerce", name: "com.liferay.commerce.account.api", version: "10.0.2"
+	compileOnly group: "com.liferay.commerce", name: "com.liferay.commerce.service", version: "10.0.23"
+	compileOnly group: "com.liferay.commerce", name: "com.liferay.commerce.inventory.api", version: "9.0.5"
+	compileOnly group: "com.liferay.commerce", name: "com.liferay.commerce.price.list.api", version: "8.2.0"
+	compileOnly group: "com.liferay.commerce", name: "com.liferay.commerce.frontend.api", version: "10.0.0"
+	compileOnly group: "com.liferay.commerce", name: "com.liferay.commerce.currency.api", version: "7.0.2"
+	
+	compileOnly project(":modules:services:kolanot-impl:kolanot-impl-api")
+    compileOnly project(":modules:services:kolanot-impl:kolanot-impl-service")
+}

@@ -1,0 +1,52 @@
+<?xml version="1.0"?>
+
+<model-hints>
+	<model name="com.kolanot.service.model.KolanotInvoice">
+		<field name="uuid" type="String" />
+		<field name="externalReferenceCode" type="String" />
+		<field name="invoiceId" type="long" />
+		<field name="groupId" type="long" />
+		<field name="companyId" type="long" />
+		<field name="createdByAccountId" type="long" />
+		<field name="accountExternalReferenceCode" type="String" />
+		<field name="referenceNo" type="String" />
+		<field name="createdBy" type="String" />
+		<field name="createDate" type="Date" />
+		<field name="modifiedDate" type="Date" />
+		<field name="documentNumber" type="String" />
+		<field name="documentStatus" type="String" />
+		<field name="documentDate" type="Date" />
+		<field name="dueDate" type="Date" />
+		<field name="carrier" type="String" />
+		<field name="trackingNumber" type="String" />
+		<field name="subTotal" type="BigDecimal" />
+		<field name="freightAmount" type="BigDecimal" />
+		<field name="gst" type="BigDecimal" />
+		<field name="invoiceTotal" type="BigDecimal" />
+		<field name="balanceDue" type="BigDecimal" />
+		<field name="trackingURL" type="String" />
+		<field name="status" type="int" />
+		<field name="paidSum" type="BigDecimal" />
+		<field name="fileEntryId" type="long" />
+		<field name="billingAddressId" type="long" />
+		<field name="shippingAddressId" type="long" />
+	</model>
+	<model name="com.kolanot.service.model.KolanotInvoiceLine">
+		<field name="uuid" type="String" />
+		<field name="invoiceLineId" type="long" />
+		<field name="groupId" type="long" />
+		<field name="invoiceId" type="long" />
+		<field name="companyId" type="long" />
+		<field name="lineNum" type="int" />
+		<field name="itemCode" type="String" />
+		<field name="itemName" type="String" />
+		<field name="quantity" type="int" />
+		<field name="price" type="BigDecimal" />
+		<field name="discountPercent" type="BigDecimal" />
+		<field name="lineTotal" type="BigDecimal" />
+		<field name="salesOrderID" type="String" />
+		<field name="salesOrderDocNum" type="String" />
+		<field name="salesOrderLineNum" type="int" />
+		<field name="salesOrderQty" type="int" />
+	</model>
+</model-hints>

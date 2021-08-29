@@ -1,0 +1,4 @@
+Bundle-Name: kolanot-invoice-portlet
+Bundle-SymbolicName: com.kolanot.invoice.portlet
+Bundle-Version: 1.0.0
+Export-Package: com.kolanot.invoice.portlet.constants

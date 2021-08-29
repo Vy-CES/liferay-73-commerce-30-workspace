@@ -1,0 +1,91 @@
+<?xml version="1.0"?>
+<!DOCTYPE service-builder PUBLIC "-//Liferay//DTD Service Builder 7.3.0//EN" "http://www.liferay.com/dtd/liferay-service-builder_7_3_0.dtd">
+
+<service-builder dependency-injector="ds" package-path="com.kolanot.service">
+	<namespace>kolanot</namespace>
+	<entity external-reference-code="true" local-service="true" name="KolanotInvoice" remote-service="true" uuid="true">
+		<!-- PK fields -->
+
+		<column name="invoiceId" primary="true" type="long" />
+
+		<!-- Group instance -->
+
+		<column name="groupId" type="long" />
+
+		<!-- Audit fields -->
+
+		<column name="companyId" type="long" />
+		<column name="createdByAccountId" type="long" />
+		<column name="commerceOrderId" type="long" />
+		<column name="accountExternalReferenceCode" type="String" />
+		<column name="referenceNo" type="String" />
+		<column name="createdBy" type="String" />
+		<column name="createDate" type="Date" />
+		<column name="modifiedDate" type="Date" />
+
+		<!-- Other fields -->
+		<column name="documentNumber" type="String" />
+		<column name="documentStatus" type="String" />
+		<column name="documentDate" type="Date" />
+		<column name="dueDate" type="Date" />
+		<column name="carrier" type="String" />
+		<column name="trackingNumber" type="String" />
+
+		<column name="subTotal" type="BigDecimal" />
+		<column name="freightAmount" type="BigDecimal" />
+		<column name="gst" type="BigDecimal" />
+		<column name="invoiceTotal" type="BigDecimal" />
+		<column name="balanceDue" type="BigDecimal" />
+		<column name="trackingURL" type="String" />
+		<column name="status" type="int" />
+		<column name="paidSum" type="BigDecimal" />
+		<column name="fileEntryId" type="long" />
+		<column name="billingAddressId" type="long" />
+		<column name="shippingAddressId" type="long" />
+
+		<!-- Order -->
+
+		<order by="asc">
+			<order-column name="createDate" />
+		</order>
+
+		<!-- Finder methods -->
+
+		<finder name="CreatedByAccountId" return-type="Collection">
+			<finder-column name="createdByAccountId" />
+		</finder>
+		<finder name="AccountExternalReferenceCode" return-type="Collection">
+			<finder-column name="accountExternalReferenceCode" />
+		</finder>
+		
+	</entity>
+	
+	<entity local-service="true" name="KolanotInvoiceLine" remote-service="true" uuid="true">
+		<!-- PK fields -->
+
+		<column name="invoiceLineId" primary="true" type="long" />
+
+		<!-- Group instance -->
+
+		<column name="groupId" type="long" />
+
+		<!-- Audit fields -->
+		<column name="invoiceId" type="long" />
+		<column name="companyId" type="long" />
+		<column name="lineNum" type="int" />
+		<column name="itemCode" type="String" />
+		<column name="itemName" type="String" />
+		<column name="quantity" type="int" />
+		<column name="price" type="BigDecimal" />
+		<column name="discountPercent" type="BigDecimal" />
+		<column name="lineTotal" type="BigDecimal" />
+		<column name="salesOrderID" type="String" />
+		<column name="salesOrderDocNum" type="String" />
+		<column name="salesOrderLineNum" type="int" />
+		<column name="salesOrderQty" type="int" />
+
+		<finder name="InvoiceId" return-type="Collection">
+			<finder-column name="invoiceId" />
+		</finder>
+	</entity>
+</service-builder>
