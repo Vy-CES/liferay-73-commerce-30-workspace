@@ -7,6 +7,7 @@ import com.kolanot.service.service.KolanotInvoiceLocalService;
 import com.kolanot.service.service.KolanotInvoiceLocalServiceUtil;
 import com.liferay.commerce.account.model.CommerceAccount;
 import com.liferay.commerce.account.service.CommerceAccountService;
+import com.liferay.commerce.constants.CommerceOrderConstants;
 import com.liferay.commerce.currency.model.CommerceCurrency;
 import com.liferay.commerce.currency.service.CommerceCurrencyLocalService;
 import com.liferay.commerce.model.CommerceOrder;
@@ -22,6 +23,7 @@ import com.liferay.frontend.taglib.clay.servlet.taglib.util.DropdownItemListBuil
 import com.liferay.petra.string.CharPool;
 import com.liferay.petra.string.StringBundler;
 import com.liferay.petra.string.StringPool;
+import com.liferay.portal.kernel.dao.orm.QueryUtil;
 import com.liferay.portal.kernel.dao.search.EmptyOnClickRowChecker;
 import com.liferay.portal.kernel.dao.search.SearchContainer;
 import com.liferay.portal.kernel.exception.PortalException;
@@ -53,11 +55,13 @@ import com.liferay.portal.kernel.util.TextFormatter;
 import com.liferay.portal.kernel.util.URLCodec;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.util.WebKeys;
+import com.liferay.portal.kernel.uuid.PortalUUIDUtil;
 import com.liferay.portal.kernel.workflow.WorkflowConstants;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -105,16 +109,36 @@ public class KolanotInvoiceDisplayContext extends KolanotInvoiceBaseDisplayConte
 				portletURL.setParameter("redirect", redirect);
 			}
 
-			long sapphireCommerceInvoiceId = ParamUtil.getLong(
-				_httpServletRequest, "sapphireCommerceInvoiceId");
+			long kolanotInvoiceId = ParamUtil.getLong(
+				_httpServletRequest, "kolanotInvoiceId");
 
-			if (sapphireCommerceInvoiceId > 0) {
+			if (kolanotInvoiceId > 0) {
 				portletURL.setParameter(
-					"sapphireCommerceInvoiceId", String.valueOf(sapphireCommerceInvoiceId));
+					"kolanotInvoiceId", String.valueOf(kolanotInvoiceId));
 			}
 
 			return portletURL;
 		}
+
+	 	public PortletURL commerceOrderItemGetPortletURL() {
+
+	 			PortletURL portletURL = _liferayPortletResponse.createRenderURL();
+
+	 			String delta = ParamUtil.getString(_httpServletRequest, "delta");
+
+	 			if (Validator.isNotNull(delta)) {
+	 				portletURL.setParameter("delta", delta);
+	 			}
+
+	 			String deltaEntry = ParamUtil.getString(
+	 				_httpServletRequest, "deltaEntry");
+
+	 			if (Validator.isNotNull(deltaEntry)) {
+	 				portletURL.setParameter("deltaEntry", deltaEntry);
+	 			}
+
+	 			return portletURL;
+	 	}
 	    
 	    public String getClearResultsURL() {
 	        PortletURL clearResultsURL = _getPortletURL();
@@ -135,7 +159,41 @@ public class KolanotInvoiceDisplayContext extends KolanotInvoiceBaseDisplayConte
 
 			return getCurrentAccount();
 		}
-	   
+
+		public List<String> getTransactionIdsByInvoiceId(long invoiceId) throws PortalException {
+	        List<String> paymentTransactionIds = new ArrayList<>();
+	        
+	        KolanotInvoice invoice = _kolanotInvoiceLocalService.getKolanotInvoice(invoiceId);
+
+	        List<KolanotInvoice> invoices = new ArrayList<KolanotInvoice>();
+	        invoices.add(invoice);
+
+	        if (!invoices.isEmpty()) {
+	            paymentTransactionIds = invoices
+	                    .stream()
+	                    .map(x -> x.getTransactionId())
+	                    .collect(Collectors.toList());
+	        }
+
+	        return paymentTransactionIds;
+	    }
+
+		public List<CommerceOrder> getPendingCommerceOrderByAccountId(long commerceAccountId, long groupId) throws PortalException {
+			List<CommerceOrder> accountOrders = _commerceOrderLocalService.getCommerceOrdersByCommerceAccountId(commerceAccountId, QueryUtil.ALL_POS, QueryUtil.ALL_POS, null);
+			List<CommerceOrder> pendingOrders = new ArrayList<CommerceOrder>();
+
+			Iterator<CommerceOrder> iter = accountOrders.iterator();
+			while(iter.hasNext()){
+				CommerceOrder order = iter.next();
+
+			    if(order.getOrderStatus() == CommerceOrderConstants.ORDER_STATUS_PENDING || Validator.isNull(order.getTransactionId())) {
+			    	pendingOrders.add(order);
+			    }
+			}
+
+			return pendingOrders;
+		}
+
 	    public CommerceOrder getCommerceOrder(long orderId) throws PortalException {
 	        if (_commerceOrder != null) {
 	            return _commerceOrder;
@@ -163,10 +221,9 @@ public class KolanotInvoiceDisplayContext extends KolanotInvoiceBaseDisplayConte
 	        portletURL.setParameter("mvcRenderCommandName", "editCommerceOrder");
 	        portletURL.setParameter(
 	                "commerceOrderId", String.valueOf(getCommerceOrderId()));
-//	        portletURL.setParameter(
-//	                "screenNavigationCategoryKey",
-//	                CommerceOrderScreenNavigationConstants.
-//	                        CATEGORY_KEY_COMMERCE_ORDER_GENERAL);
+	        portletURL.setParameter(
+	                "screenNavigationCategoryKey",
+	                "general");
 
 	        String redirect = ParamUtil.getString(
 	                _kolanotInvoiceRequestHelper.getRequest(), "redirect");
@@ -259,20 +316,20 @@ public class KolanotInvoiceDisplayContext extends KolanotInvoiceBaseDisplayConte
 	    public List<KolanotInvoice> getMultiKolanotInvoice()
 	            throws PortalException {
 
-	        List<KolanotInvoice> sapphireCommerceInvoices = new ArrayList<>();
+	        List<KolanotInvoice> kolanotInvoices = new ArrayList<>();
 
 	        String[] invoiceIds = ParamUtil.getStringValues(_kolanotInvoiceRequestHelper.getRequest(), "invoiceIds");
 
 	        if (invoiceIds.length > 0) {
 	            for (String invoiceId : invoiceIds) {
-	                KolanotInvoice sapphireCommerceInvoice =
+	                KolanotInvoice kolanotInvoice =
 	                        _kolanotInvoiceLocalService.getKolanotInvoice(
 	                                GetterUtil.getLong(invoiceId));
-	                sapphireCommerceInvoices.add(sapphireCommerceInvoice);
+	                kolanotInvoices.add(kolanotInvoice);
 	            }
 	        }
 
-	        return sapphireCommerceInvoices;
+	        return kolanotInvoices;
 	    }
 
 	    public String getSearchActionURL() {
@@ -285,7 +342,7 @@ public class KolanotInvoiceDisplayContext extends KolanotInvoiceBaseDisplayConte
 	            throws PortalException {
 
 	        if (_searchContainer != null) {
-	        	System.out.println("null");
+
 	            return _searchContainer;
 	        }
 
@@ -389,34 +446,30 @@ public class KolanotInvoiceDisplayContext extends KolanotInvoiceBaseDisplayConte
 	        return KolanotInvoiceCommonUtil.getCommerceChannelCurrencyCode(themeDisplay);
 	    }
 
-	    public BigDecimal getMultiSubtotal(List<KolanotInvoice> sapphireCommerceInvoices) {
+	    public BigDecimal getMultiSubtotal(List<KolanotInvoice> kolanotInvoices) {
 
-	        return KolanotInvoiceCommonUtil.getMultiSubtotal(sapphireCommerceInvoices);
+	        return KolanotInvoiceCommonUtil.getMultiSubtotal(kolanotInvoices);
 	    }
 
-	    public BigDecimal getMultiBalanceDue(List<KolanotInvoice> sapphireCommerceInvoices) throws PortalException {
+	    public BigDecimal getMultiBalanceDue(List<KolanotInvoice> kolanotInvoices) throws PortalException {
 	        if (this.multiBalanceDue != null) {
 	            return this.multiBalanceDue;
 	        }
 
-	        BigDecimal multiBalanceDue = KolanotInvoiceCommonUtil.getMultiBalanceDue(sapphireCommerceInvoices);
-
-	        long createdByAccountId = sapphireCommerceInvoices.get(0).getCreatedByAccountId();
-	        String createdByCustomerCode = sapphireCommerceInvoices.get(0).getAccountExternalReferenceCode();
+	        BigDecimal multiBalanceDue = KolanotInvoiceCommonUtil.getMultiBalanceDue(kolanotInvoices);
 
 	        this.multiBalanceDue = multiBalanceDue;
 	        return this.multiBalanceDue;
 	    }
 
 	    public BigDecimal getMultiBalanceDueWithOutCreditNote(
-	            List<KolanotInvoice> sapphireCommerceInvoices) throws PortalException {
+	            List<KolanotInvoice> kolanotInvoices) throws PortalException {
 
 	        return KolanotInvoiceCommonUtil.
-	                getMultiBalanceDue(sapphireCommerceInvoices);
+	                getMultiBalanceDue(kolanotInvoices);
 	    }
 
-	    public BaseModelSearchResult<KolanotInvoice>
-	    searchKolanotInvoices(SearchContext searchContext)
+	    public BaseModelSearchResult<KolanotInvoice> searchKolanotInvoices(SearchContext searchContext)
 	            throws PortalException {
 
 	        Indexer<KolanotInvoice> indexer =
@@ -426,12 +479,12 @@ public class KolanotInvoiceDisplayContext extends KolanotInvoiceBaseDisplayConte
 	        for (int i = 0; i < 10; i++) {
 	            Hits hits = indexer.search(searchContext);
 
-	            List<KolanotInvoice> sapphireCommerceInvoices =
+	            List<KolanotInvoice> kolanotInvoices =
 	                    getKolanotInvoices(hits);
 
-	            if (sapphireCommerceInvoices != null) {
+	            if (kolanotInvoices != null) {
 	                return new BaseModelSearchResult<>(
-	                        sapphireCommerceInvoices, hits.getLength());
+	                        kolanotInvoices, hits.getLength());
 	            }
 	        }
 
@@ -457,19 +510,19 @@ public class KolanotInvoiceDisplayContext extends KolanotInvoiceBaseDisplayConte
 	        if (Validator.isNotNull(hits)) {
 	            List<Document> documents = hits.toList();
 
-	            List<KolanotInvoice> sapphireCommerceInvoices = new ArrayList<>(
+	            List<KolanotInvoice> kolanotInvoices = new ArrayList<>(
 	                    documents.size());
 
 	            for (Document document : documents) {
-	                long sapphireCommerceInvoiceId = GetterUtil.getLong(
+	                long kolanotInvoiceId = GetterUtil.getLong(
 	                        document.get(Field.ENTRY_CLASS_PK));
 
-	                KolanotInvoice sapphireCommerceInvoice =
+	                KolanotInvoice kolanotInvoice =
 	                        KolanotInvoiceLocalServiceUtil.
-	                                fetchKolanotInvoice(sapphireCommerceInvoiceId);
+	                                fetchKolanotInvoice(kolanotInvoiceId);
 
-	                if (sapphireCommerceInvoice == null) {
-	                    sapphireCommerceInvoices = null;
+	                if (kolanotInvoice == null) {
+	                    kolanotInvoices = null;
 
 	                    Indexer<KolanotInvoice> indexer =
 	                            IndexerRegistryUtil.getIndexer(
@@ -479,12 +532,12 @@ public class KolanotInvoiceDisplayContext extends KolanotInvoiceBaseDisplayConte
 	                            document.get(Field.COMPANY_ID));
 
 	                    indexer.delete(companyId, document.getUID());
-	                } else if (sapphireCommerceInvoices != null) {
-	                    sapphireCommerceInvoices.add(sapphireCommerceInvoice);
+	                } else if (kolanotInvoices != null) {
+	                    kolanotInvoices.add(kolanotInvoice);
 	                }
 	            }
 
-	            return sapphireCommerceInvoices;
+	            return kolanotInvoices;
 	        }
 
 	        return null;
@@ -679,30 +732,37 @@ public class KolanotInvoiceDisplayContext extends KolanotInvoiceBaseDisplayConte
 	    private String _getPaymentUrl(List<KolanotInvoice> commerceInvoices, String payAmount) throws PortalException {
 	        if (!commerceInvoices.isEmpty()) {
 	            StringBundler sb = new StringBundler(26);
+	            CommerceOrder commerceOrder = _commerceOrderLocalService.getCommerceOrder(commerceInvoices.get(0).getCommerceOrderId());
 
 	            sb.append(_getPortalUrl());
 	            sb.append(_getPathModule());
 	            sb.append(CharPool.SLASH);
-//	            sb.append(_getPaymentServletPath());
+	            sb.append(_getPaymentServletPath());
 	            sb.append(CharPool.QUESTION);
 	            sb.append("groupId=");
 	            sb.append(getCurrentGroupId());
 	            sb.append(StringPool.AMPERSAND);
+	            
+	            sb.append("uuid=");
+	            sb.append(commerceOrder.getUuid());
+	            sb.append(StringPool.AMPERSAND);
+	            
+//	            sb.append("commerceOrderId=");
+//	            sb.append(commerceInvoices.get(0).getCommerceOrderId());
+//	            sb.append(StringPool.AMPERSAND);
 
 	            List<String> invoiceIds = commerceInvoices.stream().map(e -> String.valueOf(e.getInvoiceId())).collect(Collectors.toList());
-	            long createdByAccountId = commerceInvoices.get(0).getCreatedByAccountId();
-	            String createdByCustomerCode = commerceInvoices.get(0).getAccountExternalReferenceCode();
-
+//
 	            sb.append("invoiceIds=");
 	            sb.append(String.join(",", invoiceIds));
 	            sb.append(StringPool.AMPERSAND);
-	            sb.append("commerceChannelCurrencyCode=");
-	            sb.append(getCommerceChannelCurrencyCode());
-	            sb.append(StringPool.AMPERSAND);
-	            BigDecimal multiBalanceDue = Validator.isBlank(payAmount) ? getMultiBalanceDue(commerceInvoices) : new BigDecimal(payAmount);
-	            sb.append("multiBalanceDue=");
-	            sb.append(multiBalanceDue);
-	            sb.append(StringPool.AMPERSAND);
+//	            sb.append("commerceChannelCurrencyCode=");
+//	            sb.append(getCommerceChannelCurrencyCode());
+//	            sb.append(StringPool.AMPERSAND);
+//	            BigDecimal multiBalanceDue = Validator.isBlank(payAmount) ? getMultiBalanceDue(commerceInvoices) : new BigDecimal(payAmount);
+//	            sb.append("multiBalanceDue=");
+//	            sb.append(multiBalanceDue);
+//	            sb.append(StringPool.AMPERSAND);
 	            sb.append("nextStep=");
 	            sb.append(URLCodec.encodeURL(_getInvoiceConfirmationPaymentUrl(invoiceIds, true)));
 	            sb.append(StringPool.AMPERSAND);
@@ -711,11 +771,9 @@ public class KolanotInvoiceDisplayContext extends KolanotInvoiceBaseDisplayConte
 //
 //	            sb.append("creditNoteValue=");
 //	            sb.append(multiBalanceDueWithOutCreditNote.doubleValue() >= creditNoteValue.doubleValue() ? creditNoteValue : BigDecimal.ZERO);
-	            sb.append(StringPool.AMPERSAND);
-	            sb.append("failedUrl=");
-	            sb.append(URLCodec.encodeURL(_getInvoiceConfirmationPaymentUrl(invoiceIds, false)));
-	            sb.append(StringPool.AMPERSAND);
-
+//	            sb.append("failedUrl=");
+//	            sb.append(URLCodec.encodeURL(_getInvoiceConfirmationPaymentUrl(invoiceIds, false)));
+//	            sb.append(StringPool.AMPERSAND);
 	            return sb.toString();
 	        }
 
@@ -735,7 +793,7 @@ public class KolanotInvoiceDisplayContext extends KolanotInvoiceBaseDisplayConte
 	        PortletURL portletURL = liferayPortletResponse.createRenderURL();
 
 	        portletURL.setParameter(
-	                "mvcRenderCommandName", "viewKolanotInvoicePaymentConfirmation");
+	                "mvcRenderCommandName", "viewKolanotCommerceInvoicePaymentConfirmation");
 	        portletURL.setParameter("invoiceIds", String.join(",", invoiceIds));
 	        portletURL.setParameter("isSuccess", String.valueOf(isSuccess));
 
@@ -746,9 +804,9 @@ public class KolanotInvoiceDisplayContext extends KolanotInvoiceBaseDisplayConte
 	        return _portal.getPathModule();
 	    }
 
-//	    private String _getPaymentServletPath() {
-//	        return BpointCommercePaymentMethodConstants.SEND_INVOICE_PAYMENT_SERVLET_PATH;
-//	    }
+	    private String _getPaymentServletPath() {
+	        return "commerce-payment";
+	    }
 
 	    private String _getPortalUrl() {
 	        return _portal.getPortalURL(_httpServletRequest);

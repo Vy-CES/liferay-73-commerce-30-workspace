@@ -7,5 +7,4 @@ public class KolanotInvoicePortletKeys {
 
 	public static final String KOLANOTINVOICE =
 		"com_kolanot_invoice_portlet_KolanotInvoicePortlet";
-
 }

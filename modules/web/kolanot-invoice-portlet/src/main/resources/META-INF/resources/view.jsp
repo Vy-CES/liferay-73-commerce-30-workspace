@@ -1,8 +1,7 @@
 <%@ include file="/init.jsp" %>
 
-<liferay-ui:success key="entryAdded" message="entry-added"/>
-<liferay-ui:success key="guestbookAdded" message="guestbook-added"/>
-<liferay-ui:success key="entryDeleted" message="entry-deleted"/>
+<liferay-ui:success key="invoiceAdded" message="invoice-added"/>
+<liferay-ui:success key="invoiceDeleted" message="invoice-deleted"/>
 
 <%
 	KolanotInvoiceDisplayContext kolanotInvoiceDisplayContext = (KolanotInvoiceDisplayContext)request
@@ -14,10 +13,23 @@
 	String commerceChannelCurrencyCode = kolanotInvoiceDisplayContext.getCommerceChannelCurrencyCode();
 	SearchContainer<KolanotInvoice> commerceInvoiceSearchContainer = kolanotInvoiceDisplayContext
 		.getSearchContainer(currentCommerceAccount);
-	
+
 	long invoiceId = Long.valueOf((Long) renderRequest
 	        .getAttribute("invoiceId"));
 %>
+
+<style>
+
+.label-closed {
+	border-color: #33af0f;
+	color: #33af0f;
+}
+.label-open {
+	border-color: #d61414;
+	color: #d61414;
+}
+
+</style>
 
 <div>
 	<h1><%= LanguageUtil.get(request, "kolanot-invoices") %></h1>
@@ -25,40 +37,11 @@
 	<aui:button-row cssClass="invoices-buttons">
 
 	    <portlet:renderURL var="addInvoiceURL">
-		            <portlet:param name="mvcPath" value="/edit_invoice.jsp"/>
-		            <portlet:param name="invoiceId"
-		                           value="<%=String.valueOf(invoiceId)%>"/>
-		        </portlet:renderURL>
+		            <portlet:param name="mvcPath" value="/add_invoice.jsp"/>
+		</portlet:renderURL>
 		
-		        <aui:button onClick="<%=addInvoiceURL.toString()%>" value="Add Invoice" />
-
+		<aui:button onClick="<%=addInvoiceURL.toString()%>" value="Add Invoice" />
 	</aui:button-row>
-
-	<liferay-frontend:management-bar
-		includeCheckBox="<%= true %>"
-		searchContainerId="commerceInvoices"
-	>
-		<liferay-frontend:management-bar-buttons>
-		</liferay-frontend:management-bar-buttons>
-
-		<liferay-frontend:management-bar-filters>
-			<liferay-frontend:management-bar-navigation
-				navigationKeys='<%= new String[] {"all"} %>'
-				portletURL="<%= kolanotInvoiceDisplayContext.getPortletURL() %>"
-			/>
-
-			<liferay-frontend:management-bar-sort
-				orderByCol="<%= kolanotInvoiceDisplayContext.getOrderByCol() %>"
-				orderByType="<%= kolanotInvoiceDisplayContext.getOrderByType() %>"
-				orderColumns='<%= new String[] {"status"} %>'
-				portletURL="<%= kolanotInvoiceDisplayContext.getPortletURL() %>"
-			/>
-
-			<li><liferay-commerce:search-input
-					actionURL="<%= kolanotInvoiceDisplayContext.getPortletURL() %>"
-					formName="searchFm" /></li>
-		</liferay-frontend:management-bar-filters>
-	</liferay-frontend:management-bar>
 
 	<div class="container-fluid-1280">
 		<liferay-ui:error
@@ -95,10 +78,10 @@
 					keyProperty="invoiceId"
 					modelVar="commerceInvoice"
 				>
-					<liferay-portlet:renderURL var="viewSapphireCommerceInvoiceURL">
+					<liferay-portlet:renderURL var="viewKolanotInvoiceURL">
 						<portlet:param
 							name="mvcRenderCommandName"
-							value="viewSapphireCommerceInvoice"
+							value="viewKolanotInvoice"
 						/>
 
 						<portlet:param
@@ -111,20 +94,32 @@
 						cssClass="important table-cell-content"
 						name="invoice-id"
 					>
-						<a href="<%= viewSapphireCommerceInvoiceURL %>"> <%= HtmlUtil.escape(String.valueOf(commerceInvoice.getInvoiceId())) %>
+						<a href="<%= viewKolanotInvoiceURL %>"> <%= HtmlUtil.escape(String.valueOf(commerceInvoice.getInvoiceId())) %>
 						</a>
 					</liferay-ui:search-container-column-text>
 
 					<liferay-ui:search-container-column-text
 						cssClass="table-cell-content"
-						name="sapphire-invoice-document-date"
+						name="status"
+					>
+						<span
+							class="label label-<%= commerceInvoice.getDocumentStatus() %> status workflow-value"
+						>
+							<liferay-ui:message
+								key="<%= commerceInvoice.getDocumentStatus() %>"
+							/>
+						</span>
+					</liferay-ui:search-container-column-text>
+
+					<liferay-ui:search-container-column-text
+						cssClass="table-cell-content"
+						name="commerce-order-id"
 					>
 						<c:choose>
 							<c:when
-								test="<%= Validator.isNotNull(commerceInvoice.getDocumentDate()) %>"
+								test="<%= Validator.isNotNull(commerceInvoice.getCommerceOrderId()) %>"
 							>
-								<%= HtmlUtil
-											.escape(dateFormatDateTime.format(commerceInvoice.getDocumentDate())) %>
+								<%= commerceInvoice.getCommerceOrderId() %>
 							</c:when>
 							<c:otherwise> -- </c:otherwise>
 						</c:choose>
@@ -132,38 +127,9 @@
 
 					<liferay-ui:search-container-column-text
 						cssClass="table-cell-content"
-						name="sapphire-invoice-due-date"
-					>
-						<c:choose>
-							<c:when
-								test="<%= Validator.isNotNull(commerceInvoice.getDueDate()) %>"
-							>
-								<%= HtmlUtil
-											.escape(dateFormatDateTime.format(commerceInvoice.getDueDate())) %>
-							</c:when>
-							<c:otherwise> -- </c:otherwise>
-						</c:choose>
-					</liferay-ui:search-container-column-text>
-
-					<liferay-ui:search-container-column-text
-						cssClass="table-cell-content"
-						name="sapphire-invoice-no"
-					>
-						<c:choose>
-							<c:when
-								test="<%= Validator.isNotNull(commerceInvoice.getDocumentNumber()) %>"
-							>
-								<%= commerceInvoice.getDocumentNumber() %>
-							</c:when>
-							<c:otherwise> -- </c:otherwise>
-						</c:choose>
-
-					</liferay-ui:search-container-column-text>
-										<liferay-ui:search-container-column-text
-											cssClass="table-cell-content"
-											name="created-by"
-											property="createdBy"
-										/>
+						name="created-by"
+						property="createdBy"
+					/>
 
 					<liferay-ui:search-container-column-text
 						cssClass="table-cell-content"
@@ -183,10 +149,25 @@
 
 					<liferay-ui:search-container-column-text
 						cssClass="table-cell-content"
-						name="sapphire-invoice-balance-due"
+						name="invoice-balance-due"
 					>
 						<%= commerceChannelCurrencyCode %>
 						<%= kolanotInvoiceDisplayContext.round(commerceInvoice.getBalanceDue()) %>
+					</liferay-ui:search-container-column-text>
+
+					<liferay-ui:search-container-column-text
+						cssClass="table-cell-content"
+						name="invoice-document-date"
+					>
+						<c:choose>
+							<c:when
+								test="<%= Validator.isNotNull(commerceInvoice.getDocumentDate()) %>"
+							>
+								<%= HtmlUtil
+											.escape(dateFormatDateTime.format(commerceInvoice.getDocumentDate())) %>
+							</c:when>
+							<c:otherwise> -- </c:otherwise>
+						</c:choose>
 					</liferay-ui:search-container-column-text>
 
 					<liferay-ui:search-container-column-text
@@ -231,7 +212,7 @@
 	function <portlet:namespace />downloadPDF(id) {
 		var a = document.createElement('a');
 		a.style.display = 'none';
-		a.href = "/o/sapphire-invoice-pdf-generator?invoiceId=" + id;
+		a.href = "/o/invoice-pdf-generator?invoiceId=" + id;
 		a.click();
 	}
 

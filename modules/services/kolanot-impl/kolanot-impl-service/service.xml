@@ -24,6 +24,7 @@
 		<column name="modifiedDate" type="Date" />
 
 		<!-- Other fields -->
+		<column name="transactionId" type="String" />
 		<column name="documentNumber" type="String" />
 		<column name="documentStatus" type="String" />
 		<column name="documentDate" type="Date" />
@@ -53,6 +54,9 @@
 
 		<finder name="CreatedByAccountId" return-type="Collection">
 			<finder-column name="createdByAccountId" />
+		</finder>
+		<finder name="LinkWithOrder" return-type="KolanotInvoice">
+			<finder-column name="commerceOrderId" />
 		</finder>
 		<finder name="AccountExternalReferenceCode" return-type="Collection">
 			<finder-column name="accountExternalReferenceCode" />

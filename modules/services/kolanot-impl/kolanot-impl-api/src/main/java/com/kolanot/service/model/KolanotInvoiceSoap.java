@@ -41,12 +41,14 @@ public class KolanotInvoiceSoap implements Serializable {
 		soapModel.setGroupId(model.getGroupId());
 		soapModel.setCompanyId(model.getCompanyId());
 		soapModel.setCreatedByAccountId(model.getCreatedByAccountId());
+		soapModel.setCommerceOrderId(model.getCommerceOrderId());
 		soapModel.setAccountExternalReferenceCode(
 			model.getAccountExternalReferenceCode());
 		soapModel.setReferenceNo(model.getReferenceNo());
 		soapModel.setCreatedBy(model.getCreatedBy());
 		soapModel.setCreateDate(model.getCreateDate());
 		soapModel.setModifiedDate(model.getModifiedDate());
+		soapModel.setTransactionId(model.getTransactionId());
 		soapModel.setDocumentNumber(model.getDocumentNumber());
 		soapModel.setDocumentStatus(model.getDocumentStatus());
 		soapModel.setDocumentDate(model.getDocumentDate());
@@ -170,6 +172,14 @@ public class KolanotInvoiceSoap implements Serializable {
 		_createdByAccountId = createdByAccountId;
 	}
 
+	public long getCommerceOrderId() {
+		return _commerceOrderId;
+	}
+
+	public void setCommerceOrderId(long commerceOrderId) {
+		_commerceOrderId = commerceOrderId;
+	}
+
 	public String getAccountExternalReferenceCode() {
 		return _accountExternalReferenceCode;
 	}
@@ -210,6 +220,14 @@ public class KolanotInvoiceSoap implements Serializable {
 
 	public void setModifiedDate(Date modifiedDate) {
 		_modifiedDate = modifiedDate;
+	}
+
+	public String getTransactionId() {
+		return _transactionId;
+	}
+
+	public void setTransactionId(String transactionId) {
+		_transactionId = transactionId;
 	}
 
 	public String getDocumentNumber() {
@@ -354,11 +372,13 @@ public class KolanotInvoiceSoap implements Serializable {
 	private long _groupId;
 	private long _companyId;
 	private long _createdByAccountId;
+	private long _commerceOrderId;
 	private String _accountExternalReferenceCode;
 	private String _referenceNo;
 	private String _createdBy;
 	private Date _createDate;
 	private Date _modifiedDate;
+	private String _transactionId;
 	private String _documentNumber;
 	private String _documentStatus;
 	private Date _documentDate;

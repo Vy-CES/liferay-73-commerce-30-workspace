@@ -65,7 +65,7 @@ public class KolanotInvoiceCacheModel
 
 	@Override
 	public String toString() {
-		StringBundler sb = new StringBundler(57);
+		StringBundler sb = new StringBundler(61);
 
 		sb.append("{uuid=");
 		sb.append(uuid);
@@ -79,6 +79,8 @@ public class KolanotInvoiceCacheModel
 		sb.append(companyId);
 		sb.append(", createdByAccountId=");
 		sb.append(createdByAccountId);
+		sb.append(", commerceOrderId=");
+		sb.append(commerceOrderId);
 		sb.append(", accountExternalReferenceCode=");
 		sb.append(accountExternalReferenceCode);
 		sb.append(", referenceNo=");
@@ -89,6 +91,8 @@ public class KolanotInvoiceCacheModel
 		sb.append(createDate);
 		sb.append(", modifiedDate=");
 		sb.append(modifiedDate);
+		sb.append(", transactionId=");
+		sb.append(transactionId);
 		sb.append(", documentNumber=");
 		sb.append(documentNumber);
 		sb.append(", documentStatus=");
@@ -150,6 +154,7 @@ public class KolanotInvoiceCacheModel
 		kolanotInvoiceImpl.setGroupId(groupId);
 		kolanotInvoiceImpl.setCompanyId(companyId);
 		kolanotInvoiceImpl.setCreatedByAccountId(createdByAccountId);
+		kolanotInvoiceImpl.setCommerceOrderId(commerceOrderId);
 
 		if (accountExternalReferenceCode == null) {
 			kolanotInvoiceImpl.setAccountExternalReferenceCode("");
@@ -185,6 +190,13 @@ public class KolanotInvoiceCacheModel
 		}
 		else {
 			kolanotInvoiceImpl.setModifiedDate(new Date(modifiedDate));
+		}
+
+		if (transactionId == null) {
+			kolanotInvoiceImpl.setTransactionId("");
+		}
+		else {
+			kolanotInvoiceImpl.setTransactionId(transactionId);
 		}
 
 		if (documentNumber == null) {
@@ -267,11 +279,14 @@ public class KolanotInvoiceCacheModel
 		companyId = objectInput.readLong();
 
 		createdByAccountId = objectInput.readLong();
+
+		commerceOrderId = objectInput.readLong();
 		accountExternalReferenceCode = objectInput.readUTF();
 		referenceNo = objectInput.readUTF();
 		createdBy = objectInput.readUTF();
 		createDate = objectInput.readLong();
 		modifiedDate = objectInput.readLong();
+		transactionId = objectInput.readUTF();
 		documentNumber = objectInput.readUTF();
 		documentStatus = objectInput.readUTF();
 		documentDate = objectInput.readLong();
@@ -319,6 +334,8 @@ public class KolanotInvoiceCacheModel
 
 		objectOutput.writeLong(createdByAccountId);
 
+		objectOutput.writeLong(commerceOrderId);
+
 		if (accountExternalReferenceCode == null) {
 			objectOutput.writeUTF("");
 		}
@@ -342,6 +359,13 @@ public class KolanotInvoiceCacheModel
 
 		objectOutput.writeLong(createDate);
 		objectOutput.writeLong(modifiedDate);
+
+		if (transactionId == null) {
+			objectOutput.writeUTF("");
+		}
+		else {
+			objectOutput.writeUTF(transactionId);
+		}
 
 		if (documentNumber == null) {
 			objectOutput.writeUTF("");
@@ -403,11 +427,13 @@ public class KolanotInvoiceCacheModel
 	public long groupId;
 	public long companyId;
 	public long createdByAccountId;
+	public long commerceOrderId;
 	public String accountExternalReferenceCode;
 	public String referenceNo;
 	public String createdBy;
 	public long createDate;
 	public long modifiedDate;
+	public String transactionId;
 	public String documentNumber;
 	public String documentStatus;
 	public long documentDate;

@@ -8,11 +8,13 @@
 		<field name="groupId" type="long" />
 		<field name="companyId" type="long" />
 		<field name="createdByAccountId" type="long" />
+		<field name="commerceOrderId" type="long" />
 		<field name="accountExternalReferenceCode" type="String" />
 		<field name="referenceNo" type="String" />
 		<field name="createdBy" type="String" />
 		<field name="createDate" type="Date" />
 		<field name="modifiedDate" type="Date" />
+		<field name="transactionId" type="String" />
 		<field name="documentNumber" type="String" />
 		<field name="documentStatus" type="String" />
 		<field name="documentDate" type="Date" />

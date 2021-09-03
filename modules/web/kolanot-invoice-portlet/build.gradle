@@ -1,6 +1,8 @@
 dependencies {
 	compileOnly group: "com.liferay.portal", name: "release.portal.api"
 
+	compileOnly group: "com.liferay", name: "com.liferay.frontend.taglib.clay", version: "1.0.0"
+	compileOnly group: "com.liferay", name: "com.liferay.frontend.taglib.soy", version: "1.0.10"
 	cssBuilder group: "com.liferay", name: "com.liferay.css.builder", version: "3.0.2"
 
 	compileOnly group: "com.liferay.commerce", name: "com.liferay.commerce.api", version: "22.2.4"
@@ -13,7 +15,8 @@ dependencies {
 	compileOnly group: "com.liferay.commerce", name: "com.liferay.commerce.price.list.api", version: "8.2.0"
 	compileOnly group: "com.liferay.commerce", name: "com.liferay.commerce.frontend.api", version: "10.0.0"
 	compileOnly group: "com.liferay.commerce", name: "com.liferay.commerce.currency.api", version: "7.0.2"
-	
+
+	compileOnly project(":modules:web:commerce-payment-method-stripe")
 	compileOnly project(":modules:services:kolanot-impl:kolanot-impl-api")
     compileOnly project(":modules:services:kolanot-impl:kolanot-impl-service")
 }

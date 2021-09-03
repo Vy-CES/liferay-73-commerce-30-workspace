@@ -15,8 +15,11 @@ import com.liferay.portal.kernel.portlet.bridges.mvc.MVCPortlet;
 import com.liferay.portal.kernel.service.GroupLocalService;
 import com.liferay.portal.kernel.service.ServiceContext;
 import com.liferay.portal.kernel.service.ServiceContextFactory;
+import com.liferay.portal.kernel.servlet.SessionErrors;
+import com.liferay.portal.kernel.servlet.SessionMessages;
 import com.liferay.portal.kernel.util.ParamUtil;
 import com.liferay.portal.kernel.util.Portal;
+import com.liferay.portal.kernel.util.PortalUtil;
 import com.liferay.portal.kernel.util.WebKeys;
 
 import java.io.IOException;
@@ -53,8 +56,45 @@ public class KolanotInvoicePortlet extends MVCPortlet {
 
 	public void addInvoice(ActionRequest request, ActionResponse response) throws PortalException {
 		ServiceContext serviceContext = ServiceContextFactory.getInstance(KolanotInvoice.class.getName(), request);
-		
+
 		long invoiceId = ParamUtil.getLong(request, "invoiceId");
+		long commerceOrderId = ParamUtil.getLong(request, "commerceOrderId");
+
+		if (invoiceId > 0) {
+
+//			try {
+//
+//				_kolanotInvoiceLocalService.updateKolanotInvoice(invoiceId, commerceOrderId, serviceContext);
+//
+//				response.setRenderParameter("invoiceId", Long.toString(invoiceId));
+//
+//			} catch (Exception e) {
+//
+//				PortalUtil.copyRequestParameters(request, response);
+//
+//				response.setRenderParameter("mvcPath", "/add_invoice.jsp");
+//			}
+
+		} else {
+
+			try {
+				KolanotInvoice invoice = _kolanotInvoiceLocalService.addKolanotInvoice(
+						commerceOrderId, serviceContext);
+
+				response.setRenderParameter("invoiceId", String.valueOf(invoice.getInvoiceId()));
+
+				SessionMessages.add(request, "invoiceAdded");
+
+			} catch (Exception e) {
+				SessionErrors.add(request, e.getClass().getName());
+
+				PortalUtil.copyRequestParameters(request, response);
+
+				response.setRenderParameter("mvcPath", "/add_invoice.jsp");
+			}
+		}
+
+		request.setAttribute("invoiceId", invoiceId);
 	}
 
 	@Override
@@ -69,7 +109,7 @@ public class KolanotInvoicePortlet extends MVCPortlet {
 
 			long groupId = serviceContext.getScopeGroupId();
 
-	        long guestbookId = ParamUtil.getLong(renderRequest, "guestbookId");
+	        long invoiceId = ParamUtil.getLong(renderRequest, "invoiceId", 0);
 
 			KolanotInvoiceDisplayContext sapphireInvoiceDisplayContext =
 					new KolanotInvoiceDisplayContext(
@@ -81,15 +121,16 @@ public class KolanotInvoicePortlet extends MVCPortlet {
 						_groupLocalService,
 						_sapphireInvoiceLineLocalService);
 			
-			
+			renderRequest.setAttribute("invoiceId", invoiceId);
+			renderRequest.setAttribute("groupId", groupId);
+
 			renderRequest.setAttribute(
 					WebKeys.PORTLET_DISPLAY_CONTEXT, sapphireInvoiceDisplayContext);
+			super.render(renderRequest, renderResponse);
 		}
 		catch(Exception e) {
 			throw new PortletException(e);
-		} 
-
-		super.render(renderRequest, renderResponse);
+		}
 	}
 
 	@Reference

@@ -78,18 +78,19 @@ public class KolanotInvoiceModelImpl
 		{"uuid_", Types.VARCHAR}, {"externalReferenceCode", Types.VARCHAR},
 		{"invoiceId", Types.BIGINT}, {"groupId", Types.BIGINT},
 		{"companyId", Types.BIGINT}, {"createdByAccountId", Types.BIGINT},
+		{"commerceOrderId", Types.BIGINT},
 		{"accountExternalReferenceCode", Types.VARCHAR},
 		{"referenceNo", Types.VARCHAR}, {"createdBy", Types.VARCHAR},
 		{"createDate", Types.TIMESTAMP}, {"modifiedDate", Types.TIMESTAMP},
-		{"documentNumber", Types.VARCHAR}, {"documentStatus", Types.VARCHAR},
-		{"documentDate", Types.TIMESTAMP}, {"dueDate", Types.TIMESTAMP},
-		{"carrier", Types.VARCHAR}, {"trackingNumber", Types.VARCHAR},
-		{"subTotal", Types.DECIMAL}, {"freightAmount", Types.DECIMAL},
-		{"gst", Types.DECIMAL}, {"invoiceTotal", Types.DECIMAL},
-		{"balanceDue", Types.DECIMAL}, {"trackingURL", Types.VARCHAR},
-		{"status", Types.INTEGER}, {"paidSum", Types.DECIMAL},
-		{"fileEntryId", Types.BIGINT}, {"billingAddressId", Types.BIGINT},
-		{"shippingAddressId", Types.BIGINT}
+		{"transactionId", Types.VARCHAR}, {"documentNumber", Types.VARCHAR},
+		{"documentStatus", Types.VARCHAR}, {"documentDate", Types.TIMESTAMP},
+		{"dueDate", Types.TIMESTAMP}, {"carrier", Types.VARCHAR},
+		{"trackingNumber", Types.VARCHAR}, {"subTotal", Types.DECIMAL},
+		{"freightAmount", Types.DECIMAL}, {"gst", Types.DECIMAL},
+		{"invoiceTotal", Types.DECIMAL}, {"balanceDue", Types.DECIMAL},
+		{"trackingURL", Types.VARCHAR}, {"status", Types.INTEGER},
+		{"paidSum", Types.DECIMAL}, {"fileEntryId", Types.BIGINT},
+		{"billingAddressId", Types.BIGINT}, {"shippingAddressId", Types.BIGINT}
 	};
 
 	public static final Map<String, Integer> TABLE_COLUMNS_MAP =
@@ -102,11 +103,13 @@ public class KolanotInvoiceModelImpl
 		TABLE_COLUMNS_MAP.put("groupId", Types.BIGINT);
 		TABLE_COLUMNS_MAP.put("companyId", Types.BIGINT);
 		TABLE_COLUMNS_MAP.put("createdByAccountId", Types.BIGINT);
+		TABLE_COLUMNS_MAP.put("commerceOrderId", Types.BIGINT);
 		TABLE_COLUMNS_MAP.put("accountExternalReferenceCode", Types.VARCHAR);
 		TABLE_COLUMNS_MAP.put("referenceNo", Types.VARCHAR);
 		TABLE_COLUMNS_MAP.put("createdBy", Types.VARCHAR);
 		TABLE_COLUMNS_MAP.put("createDate", Types.TIMESTAMP);
 		TABLE_COLUMNS_MAP.put("modifiedDate", Types.TIMESTAMP);
+		TABLE_COLUMNS_MAP.put("transactionId", Types.VARCHAR);
 		TABLE_COLUMNS_MAP.put("documentNumber", Types.VARCHAR);
 		TABLE_COLUMNS_MAP.put("documentStatus", Types.VARCHAR);
 		TABLE_COLUMNS_MAP.put("documentDate", Types.TIMESTAMP);
@@ -127,7 +130,7 @@ public class KolanotInvoiceModelImpl
 	}
 
 	public static final String TABLE_SQL_CREATE =
-		"create table kolanot_KolanotInvoice (uuid_ VARCHAR(75) null,externalReferenceCode VARCHAR(75) null,invoiceId LONG not null primary key,groupId LONG,companyId LONG,createdByAccountId LONG,accountExternalReferenceCode VARCHAR(75) null,referenceNo VARCHAR(75) null,createdBy VARCHAR(75) null,createDate DATE null,modifiedDate DATE null,documentNumber VARCHAR(75) null,documentStatus VARCHAR(75) null,documentDate DATE null,dueDate DATE null,carrier VARCHAR(75) null,trackingNumber VARCHAR(75) null,subTotal DECIMAL(30, 16) null,freightAmount DECIMAL(30, 16) null,gst DECIMAL(30, 16) null,invoiceTotal DECIMAL(30, 16) null,balanceDue DECIMAL(30, 16) null,trackingURL VARCHAR(75) null,status INTEGER,paidSum DECIMAL(30, 16) null,fileEntryId LONG,billingAddressId LONG,shippingAddressId LONG)";
+		"create table kolanot_KolanotInvoice (uuid_ VARCHAR(75) null,externalReferenceCode VARCHAR(75) null,invoiceId LONG not null primary key,groupId LONG,companyId LONG,createdByAccountId LONG,commerceOrderId LONG,accountExternalReferenceCode VARCHAR(75) null,referenceNo VARCHAR(75) null,createdBy VARCHAR(75) null,createDate DATE null,modifiedDate DATE null,transactionId VARCHAR(75) null,documentNumber VARCHAR(75) null,documentStatus VARCHAR(75) null,documentDate DATE null,dueDate DATE null,carrier VARCHAR(75) null,trackingNumber VARCHAR(75) null,subTotal DECIMAL(30, 16) null,freightAmount DECIMAL(30, 16) null,gst DECIMAL(30, 16) null,invoiceTotal DECIMAL(30, 16) null,balanceDue DECIMAL(30, 16) null,trackingURL VARCHAR(75) null,status INTEGER,paidSum DECIMAL(30, 16) null,fileEntryId LONG,billingAddressId LONG,shippingAddressId LONG)";
 
 	public static final String TABLE_SQL_DROP =
 		"drop table kolanot_KolanotInvoice";
@@ -146,17 +149,19 @@ public class KolanotInvoiceModelImpl
 
 	public static final long ACCOUNTEXTERNALREFERENCECODE_COLUMN_BITMASK = 1L;
 
-	public static final long COMPANYID_COLUMN_BITMASK = 2L;
+	public static final long COMMERCEORDERID_COLUMN_BITMASK = 2L;
 
-	public static final long CREATEDBYACCOUNTID_COLUMN_BITMASK = 4L;
+	public static final long COMPANYID_COLUMN_BITMASK = 4L;
 
-	public static final long EXTERNALREFERENCECODE_COLUMN_BITMASK = 8L;
+	public static final long CREATEDBYACCOUNTID_COLUMN_BITMASK = 8L;
 
-	public static final long GROUPID_COLUMN_BITMASK = 16L;
+	public static final long EXTERNALREFERENCECODE_COLUMN_BITMASK = 16L;
 
-	public static final long UUID_COLUMN_BITMASK = 32L;
+	public static final long GROUPID_COLUMN_BITMASK = 32L;
 
-	public static final long CREATEDATE_COLUMN_BITMASK = 64L;
+	public static final long UUID_COLUMN_BITMASK = 64L;
+
+	public static final long CREATEDATE_COLUMN_BITMASK = 128L;
 
 	/**
 	 * @deprecated As of Athanasius (7.3.x), with no direct replacement
@@ -193,12 +198,14 @@ public class KolanotInvoiceModelImpl
 		model.setGroupId(soapModel.getGroupId());
 		model.setCompanyId(soapModel.getCompanyId());
 		model.setCreatedByAccountId(soapModel.getCreatedByAccountId());
+		model.setCommerceOrderId(soapModel.getCommerceOrderId());
 		model.setAccountExternalReferenceCode(
 			soapModel.getAccountExternalReferenceCode());
 		model.setReferenceNo(soapModel.getReferenceNo());
 		model.setCreatedBy(soapModel.getCreatedBy());
 		model.setCreateDate(soapModel.getCreateDate());
 		model.setModifiedDate(soapModel.getModifiedDate());
+		model.setTransactionId(soapModel.getTransactionId());
 		model.setDocumentNumber(soapModel.getDocumentNumber());
 		model.setDocumentStatus(soapModel.getDocumentStatus());
 		model.setDocumentDate(soapModel.getDocumentDate());
@@ -398,6 +405,12 @@ public class KolanotInvoiceModelImpl
 			(BiConsumer<KolanotInvoice, Long>)
 				KolanotInvoice::setCreatedByAccountId);
 		attributeGetterFunctions.put(
+			"commerceOrderId", KolanotInvoice::getCommerceOrderId);
+		attributeSetterBiConsumers.put(
+			"commerceOrderId",
+			(BiConsumer<KolanotInvoice, Long>)
+				KolanotInvoice::setCommerceOrderId);
+		attributeGetterFunctions.put(
 			"accountExternalReferenceCode",
 			KolanotInvoice::getAccountExternalReferenceCode);
 		attributeSetterBiConsumers.put(
@@ -423,6 +436,12 @@ public class KolanotInvoiceModelImpl
 		attributeSetterBiConsumers.put(
 			"modifiedDate",
 			(BiConsumer<KolanotInvoice, Date>)KolanotInvoice::setModifiedDate);
+		attributeGetterFunctions.put(
+			"transactionId", KolanotInvoice::getTransactionId);
+		attributeSetterBiConsumers.put(
+			"transactionId",
+			(BiConsumer<KolanotInvoice, String>)
+				KolanotInvoice::setTransactionId);
 		attributeGetterFunctions.put(
 			"documentNumber", KolanotInvoice::getDocumentNumber);
 		attributeSetterBiConsumers.put(
@@ -652,6 +671,29 @@ public class KolanotInvoiceModelImpl
 
 	@JSON
 	@Override
+	public long getCommerceOrderId() {
+		return _commerceOrderId;
+	}
+
+	@Override
+	public void setCommerceOrderId(long commerceOrderId) {
+		_columnBitmask |= COMMERCEORDERID_COLUMN_BITMASK;
+
+		if (!_setOriginalCommerceOrderId) {
+			_setOriginalCommerceOrderId = true;
+
+			_originalCommerceOrderId = _commerceOrderId;
+		}
+
+		_commerceOrderId = commerceOrderId;
+	}
+
+	public long getOriginalCommerceOrderId() {
+		return _originalCommerceOrderId;
+	}
+
+	@JSON
+	@Override
 	public String getAccountExternalReferenceCode() {
 		if (_accountExternalReferenceCode == null) {
 			return "";
@@ -739,6 +781,22 @@ public class KolanotInvoiceModelImpl
 		_setModifiedDate = true;
 
 		_modifiedDate = modifiedDate;
+	}
+
+	@JSON
+	@Override
+	public String getTransactionId() {
+		if (_transactionId == null) {
+			return "";
+		}
+		else {
+			return _transactionId;
+		}
+	}
+
+	@Override
+	public void setTransactionId(String transactionId) {
+		_transactionId = transactionId;
 	}
 
 	@JSON
@@ -1001,12 +1059,14 @@ public class KolanotInvoiceModelImpl
 		kolanotInvoiceImpl.setGroupId(getGroupId());
 		kolanotInvoiceImpl.setCompanyId(getCompanyId());
 		kolanotInvoiceImpl.setCreatedByAccountId(getCreatedByAccountId());
+		kolanotInvoiceImpl.setCommerceOrderId(getCommerceOrderId());
 		kolanotInvoiceImpl.setAccountExternalReferenceCode(
 			getAccountExternalReferenceCode());
 		kolanotInvoiceImpl.setReferenceNo(getReferenceNo());
 		kolanotInvoiceImpl.setCreatedBy(getCreatedBy());
 		kolanotInvoiceImpl.setCreateDate(getCreateDate());
 		kolanotInvoiceImpl.setModifiedDate(getModifiedDate());
+		kolanotInvoiceImpl.setTransactionId(getTransactionId());
 		kolanotInvoiceImpl.setDocumentNumber(getDocumentNumber());
 		kolanotInvoiceImpl.setDocumentStatus(getDocumentStatus());
 		kolanotInvoiceImpl.setDocumentDate(getDocumentDate());
@@ -1113,6 +1173,11 @@ public class KolanotInvoiceModelImpl
 
 		kolanotInvoiceModelImpl._setOriginalCreatedByAccountId = false;
 
+		kolanotInvoiceModelImpl._originalCommerceOrderId =
+			kolanotInvoiceModelImpl._commerceOrderId;
+
+		kolanotInvoiceModelImpl._setOriginalCommerceOrderId = false;
+
 		kolanotInvoiceModelImpl._originalAccountExternalReferenceCode =
 			kolanotInvoiceModelImpl._accountExternalReferenceCode;
 
@@ -1153,6 +1218,8 @@ public class KolanotInvoiceModelImpl
 		kolanotInvoiceCacheModel.companyId = getCompanyId();
 
 		kolanotInvoiceCacheModel.createdByAccountId = getCreatedByAccountId();
+
+		kolanotInvoiceCacheModel.commerceOrderId = getCommerceOrderId();
 
 		kolanotInvoiceCacheModel.accountExternalReferenceCode =
 			getAccountExternalReferenceCode();
@@ -1198,6 +1265,14 @@ public class KolanotInvoiceModelImpl
 		}
 		else {
 			kolanotInvoiceCacheModel.modifiedDate = Long.MIN_VALUE;
+		}
+
+		kolanotInvoiceCacheModel.transactionId = getTransactionId();
+
+		String transactionId = kolanotInvoiceCacheModel.transactionId;
+
+		if ((transactionId != null) && (transactionId.length() == 0)) {
+			kolanotInvoiceCacheModel.transactionId = null;
 		}
 
 		kolanotInvoiceCacheModel.documentNumber = getDocumentNumber();
@@ -1365,6 +1440,9 @@ public class KolanotInvoiceModelImpl
 	private long _createdByAccountId;
 	private long _originalCreatedByAccountId;
 	private boolean _setOriginalCreatedByAccountId;
+	private long _commerceOrderId;
+	private long _originalCommerceOrderId;
+	private boolean _setOriginalCommerceOrderId;
 	private String _accountExternalReferenceCode;
 	private String _originalAccountExternalReferenceCode;
 	private String _referenceNo;
@@ -1372,6 +1450,7 @@ public class KolanotInvoiceModelImpl
 	private Date _createDate;
 	private Date _modifiedDate;
 	private boolean _setModifiedDate;
+	private String _transactionId;
 	private String _documentNumber;
 	private String _documentStatus;
 	private Date _documentDate;

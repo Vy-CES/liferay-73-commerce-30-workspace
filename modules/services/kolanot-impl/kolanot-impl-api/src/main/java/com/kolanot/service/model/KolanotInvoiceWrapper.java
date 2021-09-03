@@ -51,12 +51,14 @@ public class KolanotInvoiceWrapper
 		attributes.put("groupId", getGroupId());
 		attributes.put("companyId", getCompanyId());
 		attributes.put("createdByAccountId", getCreatedByAccountId());
+		attributes.put("commerceOrderId", getCommerceOrderId());
 		attributes.put(
 			"accountExternalReferenceCode", getAccountExternalReferenceCode());
 		attributes.put("referenceNo", getReferenceNo());
 		attributes.put("createdBy", getCreatedBy());
 		attributes.put("createDate", getCreateDate());
 		attributes.put("modifiedDate", getModifiedDate());
+		attributes.put("transactionId", getTransactionId());
 		attributes.put("documentNumber", getDocumentNumber());
 		attributes.put("documentStatus", getDocumentStatus());
 		attributes.put("documentDate", getDocumentDate());
@@ -117,6 +119,12 @@ public class KolanotInvoiceWrapper
 			setCreatedByAccountId(createdByAccountId);
 		}
 
+		Long commerceOrderId = (Long)attributes.get("commerceOrderId");
+
+		if (commerceOrderId != null) {
+			setCommerceOrderId(commerceOrderId);
+		}
+
 		String accountExternalReferenceCode = (String)attributes.get(
 			"accountExternalReferenceCode");
 
@@ -146,6 +154,12 @@ public class KolanotInvoiceWrapper
 
 		if (modifiedDate != null) {
 			setModifiedDate(modifiedDate);
+		}
+
+		String transactionId = (String)attributes.get("transactionId");
+
+		if (transactionId != null) {
+			setTransactionId(transactionId);
 		}
 
 		String documentNumber = (String)attributes.get("documentNumber");
@@ -289,6 +303,16 @@ public class KolanotInvoiceWrapper
 	@Override
 	public String getCarrier() {
 		return model.getCarrier();
+	}
+
+	/**
+	 * Returns the commerce order ID of this kolanot invoice.
+	 *
+	 * @return the commerce order ID of this kolanot invoice
+	 */
+	@Override
+	public long getCommerceOrderId() {
+		return model.getCommerceOrderId();
 	}
 
 	/**
@@ -532,6 +556,16 @@ public class KolanotInvoiceWrapper
 	}
 
 	/**
+	 * Returns the transaction ID of this kolanot invoice.
+	 *
+	 * @return the transaction ID of this kolanot invoice
+	 */
+	@Override
+	public String getTransactionId() {
+		return model.getTransactionId();
+	}
+
+	/**
 	 * Returns the uuid of this kolanot invoice.
 	 *
 	 * @return the uuid of this kolanot invoice
@@ -586,6 +620,16 @@ public class KolanotInvoiceWrapper
 	@Override
 	public void setCarrier(String carrier) {
 		model.setCarrier(carrier);
+	}
+
+	/**
+	 * Sets the commerce order ID of this kolanot invoice.
+	 *
+	 * @param commerceOrderId the commerce order ID of this kolanot invoice
+	 */
+	@Override
+	public void setCommerceOrderId(long commerceOrderId) {
+		model.setCommerceOrderId(commerceOrderId);
 	}
 
 	/**
@@ -826,6 +870,16 @@ public class KolanotInvoiceWrapper
 	@Override
 	public void setTrackingURL(String trackingURL) {
 		model.setTrackingURL(trackingURL);
+	}
+
+	/**
+	 * Sets the transaction ID of this kolanot invoice.
+	 *
+	 * @param transactionId the transaction ID of this kolanot invoice
+	 */
+	@Override
+	public void setTransactionId(String transactionId) {
+		model.setTransactionId(transactionId);
 	}
 
 	/**

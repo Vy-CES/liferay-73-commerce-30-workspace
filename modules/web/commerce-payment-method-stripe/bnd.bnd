@@ -1,0 +1,12 @@
+Bundle-Name: commerce-payment-method-stripe
+Bundle-SymbolicName: com.uminas.commerce.payment.method.stripe
+Bundle-Version: 1.0.0
+Web-ContextPath: /commerce-payment-method-stripe
+Export-Package: \
+	com.uminas.commerce.payment.method.stripe,\
+	com.uminas.commerce.payment.method.stripe.configuration,\
+	com.uminas.commerce.payment.method.stripe.constant,\
+	com.uminas.commerce.payment.method.stripe.portlet.action,\
+	com.uminas.commerce.payment.method.stripe.servlet,\
+	com.uminas.commerce.payment.method.stripe.servlet.filter,\
+	com.uminas.commerce.payment.method.stripe.taglib.ui

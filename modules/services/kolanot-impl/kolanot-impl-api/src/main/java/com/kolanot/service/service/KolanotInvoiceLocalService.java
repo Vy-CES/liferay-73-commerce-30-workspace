@@ -14,8 +14,8 @@
 
 package com.kolanot.service.service;
 
+import com.kolanot.service.exception.NoSuchKolanotInvoiceException;
 import com.kolanot.service.model.KolanotInvoice;
-import com.kolanot.service.model.KolanotInvoiceLine;
 
 import com.liferay.exportimport.kernel.lar.PortletDataContext;
 import com.liferay.portal.kernel.dao.orm.ActionableDynamicQuery;
@@ -26,11 +26,13 @@ import com.liferay.portal.kernel.dao.orm.Projection;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.exception.SystemException;
 import com.liferay.portal.kernel.model.PersistedModel;
+import com.liferay.portal.kernel.model.SystemEventConstants;
 import com.liferay.portal.kernel.search.Indexable;
 import com.liferay.portal.kernel.search.IndexableType;
 import com.liferay.portal.kernel.service.BaseLocalService;
 import com.liferay.portal.kernel.service.PersistedModelLocalService;
 import com.liferay.portal.kernel.service.ServiceContext;
+import com.liferay.portal.kernel.systemevent.SystemEvent;
 import com.liferay.portal.kernel.transaction.Isolation;
 import com.liferay.portal.kernel.transaction.Propagation;
 import com.liferay.portal.kernel.transaction.Transactional;
@@ -40,7 +42,6 @@ import java.io.Serializable;
 
 import java.math.BigDecimal;
 
-import java.util.Date;
 import java.util.List;
 
 import org.osgi.annotation.versioning.ProviderType;
@@ -82,16 +83,9 @@ public interface KolanotInvoiceLocalService
 	@Indexable(type = IndexableType.REINDEX)
 	public KolanotInvoice addKolanotInvoice(KolanotInvoice kolanotInvoice);
 
+	@Indexable(type = IndexableType.REINDEX)
 	public KolanotInvoice addKolanotInvoice(
-			String externalReferenceCode, String referenceNo, String cardCode,
-			String cardName, String documentNumber, String documentStatus,
-			Date documentDate, Date dueDate, String carrier,
-			String trackingNumber, BigDecimal subTotal,
-			BigDecimal freightAmount, BigDecimal gst, BigDecimal invoiceTotal,
-			BigDecimal balanceDue, BigDecimal paidSum, long billingAddressId,
-			long shippingAddressId,
-			List<KolanotInvoiceLine> KolanotInvoiceLines, String trackingURL,
-			ServiceContext serviceContext)
+			long commerceOrderId, ServiceContext serviceContext)
 		throws PortalException;
 
 	/**
@@ -134,6 +128,7 @@ public interface KolanotInvoiceLocalService
 	 * @throws PortalException if a kolanot invoice with the primary key could not be found
 	 */
 	@Indexable(type = IndexableType.DELETE)
+	@SystemEvent(type = SystemEventConstants.TYPE_DELETE)
 	public KolanotInvoice deleteKolanotInvoice(long invoiceId)
 		throws PortalException;
 
@@ -234,6 +229,9 @@ public interface KolanotInvoiceLocalService
 	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
 	public KolanotInvoice fetchKolanotInvoiceByUuidAndGroupId(
 		String uuid, long groupId);
+
+	public KolanotInvoice findInvoiceByOrderId(long commerceOrderId)
+		throws NoSuchKolanotInvoiceException;
 
 	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
 	public ActionableDynamicQuery getActionableDynamicQuery();
@@ -345,9 +343,10 @@ public interface KolanotInvoiceLocalService
 	@Indexable(type = IndexableType.REINDEX)
 	public KolanotInvoice updateKolanotInvoice(KolanotInvoice kolanotInvoice);
 
+	@Indexable(type = IndexableType.REINDEX)
 	public KolanotInvoice updateKolanotInvoice(
-			Long invoiceId, String documentStatus, BigDecimal balanceDue,
-			ServiceContext serviceContext)
+			Long invoiceId, BigDecimal balanceDue, BigDecimal paidAmount,
+			String transactionId, ServiceContext serviceContext)
 		throws PortalException;
 
 }

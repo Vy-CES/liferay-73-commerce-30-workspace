@@ -2,8 +2,6 @@ package com.kolanot.invoice.portlet.util;
 
 import com.kolanot.invoice.portlet.constants.KolanotInvoicePortletKeys;
 import com.kolanot.service.model.KolanotInvoice;
-import com.liferay.commerce.account.model.CommerceAccountGroup;
-import com.liferay.commerce.account.service.CommerceAccountGroupLocalServiceUtil;
 import com.liferay.commerce.constants.CommercePortletKeys;
 import com.liferay.commerce.currency.model.CommerceCurrency;
 import com.liferay.commerce.currency.service.CommerceCurrencyLocalServiceUtil;
@@ -25,11 +23,9 @@ import com.liferay.portal.kernel.theme.PortletDisplay;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
 import com.liferay.portal.kernel.util.OrderByComparator;
 import com.liferay.portal.kernel.util.PortalUtil;
-import com.liferay.portal.kernel.util.Validator;
 
 import java.math.BigDecimal;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import javax.portlet.PortletMode;
 import javax.portlet.PortletModeException;
@@ -42,9 +38,6 @@ import javax.servlet.http.HttpServletRequest;
  * @author Dinh Thai
  */
 public class KolanotInvoiceCommonUtil {
-	private static final String ACCOUNT_HOLDER_NET_7_DAYS = "NET7DAYS";
-	private static final String ACCOUNT_HOLDER_30_DAYS_EOM = "30DAYSEOM";
-	private static final String ACCOUNT_HOLDER_NET_60_DAYS = "NET60DAYS";
 
 	public static String getCommerceChannelCurrencyCode(
 		ThemeDisplay themeDisplay) {
@@ -128,10 +121,10 @@ public class KolanotInvoiceCommonUtil {
 	}
 
 	public static BigDecimal getMultiBalanceDue(
-			List<KolanotInvoice> sapphireCommerceInvoices) {
+			List<KolanotInvoice> kolanotInvoices) {
 
-		if (!sapphireCommerceInvoices.isEmpty()) {
-			return sapphireCommerceInvoices
+		if (!kolanotInvoices.isEmpty()) {
+			return kolanotInvoices
 					.stream()
 					.map(x -> x.getBalanceDue())
 					.reduce(BigDecimal.ZERO, BigDecimal::add);
@@ -141,12 +134,12 @@ public class KolanotInvoiceCommonUtil {
 	}
 
 	public static BigDecimal getMultiSubtotal(
-		List<KolanotInvoice> sapphireCommerceInvoices) {
+		List<KolanotInvoice> kolanotInvoices) {
 
 		BigDecimal multiSubtotal = new BigDecimal(0);
 
 		for (KolanotInvoice sapphireCommerceInvoice :
-				sapphireCommerceInvoices) {
+				kolanotInvoices) {
 
 			multiSubtotal = multiSubtotal.add(
 				sapphireCommerceInvoice.getSubTotal());
@@ -271,11 +264,11 @@ public class KolanotInvoiceCommonUtil {
 	private static final Log _log = LogFactoryUtil.getLog(
 		KolanotInvoiceCommonUtil.class);
 
-	public static BigDecimal getMultiPaidSum(List<KolanotInvoice> sapphireCommerceInvoices) {
+	public static BigDecimal getMultiPaidSum(List<KolanotInvoice> kolanotInvoices) {
 		BigDecimal multiPaidSum = new BigDecimal(0);
 
 		for (KolanotInvoice sapphireCommerceInvoice :
-				sapphireCommerceInvoices) {
+				kolanotInvoices) {
 
 			multiPaidSum = multiPaidSum.add(
 					sapphireCommerceInvoice.getPaidSum());

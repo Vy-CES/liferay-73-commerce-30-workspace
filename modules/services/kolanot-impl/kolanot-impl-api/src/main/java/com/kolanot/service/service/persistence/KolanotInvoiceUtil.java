@@ -714,6 +714,65 @@ public class KolanotInvoiceUtil {
 	}
 
 	/**
+	 * Returns the kolanot invoice where commerceOrderId = &#63; or throws a <code>NoSuchKolanotInvoiceException</code> if it could not be found.
+	 *
+	 * @param commerceOrderId the commerce order ID
+	 * @return the matching kolanot invoice
+	 * @throws NoSuchKolanotInvoiceException if a matching kolanot invoice could not be found
+	 */
+	public static KolanotInvoice findByLinkWithOrder(long commerceOrderId)
+		throws com.kolanot.service.exception.NoSuchKolanotInvoiceException {
+
+		return getPersistence().findByLinkWithOrder(commerceOrderId);
+	}
+
+	/**
+	 * Returns the kolanot invoice where commerceOrderId = &#63; or returns <code>null</code> if it could not be found. Uses the finder cache.
+	 *
+	 * @param commerceOrderId the commerce order ID
+	 * @return the matching kolanot invoice, or <code>null</code> if a matching kolanot invoice could not be found
+	 */
+	public static KolanotInvoice fetchByLinkWithOrder(long commerceOrderId) {
+		return getPersistence().fetchByLinkWithOrder(commerceOrderId);
+	}
+
+	/**
+	 * Returns the kolanot invoice where commerceOrderId = &#63; or returns <code>null</code> if it could not be found, optionally using the finder cache.
+	 *
+	 * @param commerceOrderId the commerce order ID
+	 * @param useFinderCache whether to use the finder cache
+	 * @return the matching kolanot invoice, or <code>null</code> if a matching kolanot invoice could not be found
+	 */
+	public static KolanotInvoice fetchByLinkWithOrder(
+		long commerceOrderId, boolean useFinderCache) {
+
+		return getPersistence().fetchByLinkWithOrder(
+			commerceOrderId, useFinderCache);
+	}
+
+	/**
+	 * Removes the kolanot invoice where commerceOrderId = &#63; from the database.
+	 *
+	 * @param commerceOrderId the commerce order ID
+	 * @return the kolanot invoice that was removed
+	 */
+	public static KolanotInvoice removeByLinkWithOrder(long commerceOrderId)
+		throws com.kolanot.service.exception.NoSuchKolanotInvoiceException {
+
+		return getPersistence().removeByLinkWithOrder(commerceOrderId);
+	}
+
+	/**
+	 * Returns the number of kolanot invoices where commerceOrderId = &#63;.
+	 *
+	 * @param commerceOrderId the commerce order ID
+	 * @return the number of matching kolanot invoices
+	 */
+	public static int countByLinkWithOrder(long commerceOrderId) {
+		return getPersistence().countByLinkWithOrder(commerceOrderId);
+	}
+
+	/**
 	 * Returns all the kolanot invoices where accountExternalReferenceCode = &#63;.
 	 *
 	 * @param accountExternalReferenceCode the account external reference code

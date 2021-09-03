@@ -1,0 +1,12 @@
+Bundle-Name: sapphire-commerce-invoice-pdf-generator
+Bundle-SymbolicName: com.sapphire.commerce.invoice.pdf.generator
+Bundle-Version: 1.0.0
+Import-Package:\
+	!junit.*,\
+	!org.bouncycastle.*,\
+	!org.apache.avalon.framework.logger,\
+	!org.apache.log,\
+    !org.slf4j.*,\
+	*
+Export-Package:\
+	com.sapphire.commerce.invoice.pdf.generator.*,\

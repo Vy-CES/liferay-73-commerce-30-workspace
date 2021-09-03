@@ -55,26 +55,11 @@ public class KolanotInvoiceLocalServiceUtil {
 	}
 
 	public static com.kolanot.service.model.KolanotInvoice addKolanotInvoice(
-			String externalReferenceCode, String referenceNo, String cardCode,
-			String cardName, String documentNumber, String documentStatus,
-			java.util.Date documentDate, java.util.Date dueDate, String carrier,
-			String trackingNumber, java.math.BigDecimal subTotal,
-			java.math.BigDecimal freightAmount, java.math.BigDecimal gst,
-			java.math.BigDecimal invoiceTotal, java.math.BigDecimal balanceDue,
-			java.math.BigDecimal paidSum, long billingAddressId,
-			long shippingAddressId,
-			java.util.List<com.kolanot.service.model.KolanotInvoiceLine>
-				KolanotInvoiceLines,
-			String trackingURL,
+			long commerceOrderId,
 			com.liferay.portal.kernel.service.ServiceContext serviceContext)
 		throws com.liferay.portal.kernel.exception.PortalException {
 
-		return getService().addKolanotInvoice(
-			externalReferenceCode, referenceNo, cardCode, cardName,
-			documentNumber, documentStatus, documentDate, dueDate, carrier,
-			trackingNumber, subTotal, freightAmount, gst, invoiceTotal,
-			balanceDue, paidSum, billingAddressId, shippingAddressId,
-			KolanotInvoiceLines, trackingURL, serviceContext);
+		return getService().addKolanotInvoice(commerceOrderId, serviceContext);
 	}
 
 	/**
@@ -263,6 +248,13 @@ public class KolanotInvoiceLocalServiceUtil {
 		return getService().fetchKolanotInvoiceByUuidAndGroupId(uuid, groupId);
 	}
 
+	public static com.kolanot.service.model.KolanotInvoice findInvoiceByOrderId(
+			long commerceOrderId)
+		throws com.kolanot.service.exception.NoSuchKolanotInvoiceException {
+
+		return getService().findInvoiceByOrderId(commerceOrderId);
+	}
+
 	public static com.liferay.portal.kernel.dao.orm.ActionableDynamicQuery
 		getActionableDynamicQuery() {
 
@@ -409,13 +401,13 @@ public class KolanotInvoiceLocalServiceUtil {
 	}
 
 	public static com.kolanot.service.model.KolanotInvoice updateKolanotInvoice(
-			Long invoiceId, String documentStatus,
-			java.math.BigDecimal balanceDue,
+			Long invoiceId, java.math.BigDecimal balanceDue,
+			java.math.BigDecimal paidAmount, String transactionId,
 			com.liferay.portal.kernel.service.ServiceContext serviceContext)
 		throws com.liferay.portal.kernel.exception.PortalException {
 
 		return getService().updateKolanotInvoice(
-			invoiceId, documentStatus, balanceDue, serviceContext);
+			invoiceId, balanceDue, paidAmount, transactionId, serviceContext);
 	}
 
 	public static KolanotInvoiceLocalService getService() {

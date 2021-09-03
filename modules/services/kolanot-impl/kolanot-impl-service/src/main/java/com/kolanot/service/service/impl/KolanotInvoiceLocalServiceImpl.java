@@ -22,9 +22,16 @@ import com.kolanot.service.service.KolanotInvoiceLineLocalService;
 import com.kolanot.service.service.base.KolanotInvoiceLocalServiceBaseImpl;
 import com.liferay.commerce.account.model.CommerceAccount;
 import com.liferay.commerce.account.service.CommerceAccountLocalService;
+import com.liferay.commerce.constants.CommerceOrderConstants;
+import com.liferay.commerce.model.CommerceOrder;
+import com.liferay.commerce.service.CommerceOrderLocalService;
 import com.liferay.portal.aop.AopService;
 import com.liferay.portal.kernel.exception.PortalException;
+import com.liferay.portal.kernel.model.SystemEventConstants;
+import com.liferay.portal.kernel.search.Indexable;
+import com.liferay.portal.kernel.search.IndexableType;
 import com.liferay.portal.kernel.service.ServiceContext;
+import com.liferay.portal.kernel.systemevent.SystemEvent;
 import com.liferay.portal.kernel.util.Validator;
 
 import java.math.BigDecimal;
@@ -56,40 +63,40 @@ import org.slf4j.LoggerFactory;
 public class KolanotInvoiceLocalServiceImpl
 	extends KolanotInvoiceLocalServiceBaseImpl {
 
+	@Indexable(type = IndexableType.REINDEX)
 	public KolanotInvoice addKolanotInvoice(
-			String externalReferenceCode, String referenceNo, String cardCode,
-			String cardName, String documentNumber, String documentStatus,
-			Date documentDate, Date dueDate, String carrier,
-			String trackingNumber, BigDecimal subTotal,
-			BigDecimal freightAmount, BigDecimal gst, BigDecimal invoiceTotal,
-			BigDecimal balanceDue, BigDecimal paidSum, long billingAddressId,
-			long shippingAddressId,
-			List<KolanotInvoiceLine> KolanotInvoiceLines, String trackingURL,
+			long commerceOrderId,
 			ServiceContext serviceContext)
 		throws PortalException {
 
 		long invoiceId = counterLocalService.increment();
 		long companyId = serviceContext.getCompanyId();
+		
+		CommerceOrder linkedOrder = _commerceOrderLocalService.fetchCommerceOrder(commerceOrderId);
+
+		if (linkedOrder == null) {
+			
+			return null;
+		}
 
 		CommerceAccount commerceAccount =
-			_commerceAccountLocalService.fetchByExternalReferenceCode(
-				companyId, cardCode);
+			_commerceAccountLocalService.fetchCommerceAccount(linkedOrder.getCommerceAccountId());
 
 		if (Validator.isNull(commerceAccount)) {
 			_log.warn(
-				"Failed to find commerce account using external reference code [" +
-					cardCode + "].");
+				"Failed to find commerce account linked with commerceOrderId [" +
+						linkedOrder.getCommerceAccountId() + "].");
 
 			throw new PortalException(
-				"Could not find commerce account using external reference code [" +
-					cardCode + "].");
+				"Could not find commerce account linked with commerceOrderId [" +
+						linkedOrder.getCommerceAccountId() + "].");
 		}
 
 		KolanotInvoice invoice =
 			kolanotInvoicePersistence.create(invoiceId);
 
-		invoice.setBillingAddressId(billingAddressId);
-		invoice.setShippingAddressId(shippingAddressId);
+		invoice.setBillingAddressId(linkedOrder.getBillingAddressId());
+		invoice.setShippingAddressId(linkedOrder.getShippingAddressId());
 
 		Date currentDate = new Date();
 
@@ -98,42 +105,39 @@ public class KolanotInvoiceLocalServiceImpl
 		invoice.setCreatedByAccountId(commerceAccount.getCommerceAccountId());
 		invoice.setCompanyId(companyId);
 
-		invoice.setExternalReferenceCode(externalReferenceCode);
-		invoice.setReferenceNo(referenceNo);
-		invoice.setAccountExternalReferenceCode(cardCode);
-		invoice.setDocumentNumber(documentNumber);
-		invoice.setDocumentStatus(documentStatus);
-		invoice.setDueDate(dueDate);
-		invoice.setDocumentDate(documentDate);
-		invoice.setCarrier(carrier);
-		invoice.setTrackingNumber(trackingNumber);
-		invoice.setTrackingURL(trackingURL);
+//		invoice.setExternalReferenceCode(externalReferenceCode);
+//		invoice.setReferenceNo(referenceNo);
+//		invoice.setAccountExternalReferenceCode(cardCode);
+//		invoice.setDocumentNumber(documentNumber);
+		invoice.setDocumentStatus("open");
+//		invoice.setDueDate(dueDate);
+//		invoice.setDocumentDate(documentDate);
+//		invoice.setCarrier(carrier);
+//		invoice.setTrackingNumber(trackingNumber);
+//		invoice.setTrackingURL(trackingURL);
 
-		invoice.setSubTotal(subTotal);
-		invoice.setFreightAmount(freightAmount);
-		invoice.setGst(gst);
-		invoice.setInvoiceTotal(invoiceTotal);
-		invoice.setBalanceDue(balanceDue);
-		invoice.setPaidSum(paidSum);
-		invoice.setStatus(getInvoiceStatus(documentStatus));
-
-		for (KolanotInvoiceLine KolanotInvoiceLine : KolanotInvoiceLines) {
-			KolanotInvoiceLine.setInvoiceId(invoiceId);
-			KolanotInvoiceLine.setGroupId(invoice.getGroupId());
-			KolanotInvoiceLine.setCompanyId(invoice.getCompanyId());
-
-			_kolanotInvoiceLineLocalService.updateKolanotInvoiceLine(
-				KolanotInvoiceLine);
-		}
+//		invoice.setSubTotal(subTotal);
+//		invoice.setFreightAmount(freightAmount);
+//		invoice.setGst(gst);
+		invoice.setCommerceOrderId(commerceOrderId);
+		invoice.setInvoiceTotal(linkedOrder.getTotal());
+		invoice.setBalanceDue(linkedOrder.getTotal());
+		invoice.setPaidSum(new BigDecimal(0));
+		invoice.setStatus(getInvoiceStatus("open"));
 
 		kolanotInvoiceLocalService.addKolanotInvoice(invoice);
+
+		linkedOrder.setStatus(CommerceOrderConstants.ORDER_STATUS_PROCESSING);
+		linkedOrder.setCommercePaymentMethodKey("stripe");
+		_commerceOrderLocalService.updateCommerceOrder(linkedOrder);
 
 		return invoice;
 	}
 
+	@Indexable(type = IndexableType.REINDEX)
+	@Override
 	public KolanotInvoice updateKolanotInvoice(
-			Long invoiceId, String documentStatus,
-			BigDecimal balanceDue, ServiceContext serviceContext)
+			Long invoiceId, BigDecimal balanceDue, BigDecimal paidAmount, String transactionId, ServiceContext serviceContext)
 		throws PortalException {
 
 		KolanotInvoice invoice =
@@ -151,36 +155,49 @@ public class KolanotInvoiceLocalServiceImpl
 
 		// update balanceDue
 
-		if (documentStatus.equalsIgnoreCase(
+		if (invoice.getDocumentStatus().equalsIgnoreCase(
 				KolanotInvoiceStatusMapping.OPEN.statusName)) {
 
 			BigDecimal invoiceTotal = invoice.getInvoiceTotal();
 
-			invoice.setStatus(KolanotInvoiceStatusMapping.OPEN.statusNumber);
+			invoice.setStatus(KolanotInvoiceStatusMapping.CLOSED.statusNumber);
+			invoice.setDocumentStatus(KolanotInvoiceStatusMapping.CLOSED.name());
 
 			invoice.setBalanceDue(balanceDue);
 			invoice.setPaidSum(invoiceTotal.subtract(balanceDue));
+			invoice.setTransactionId(transactionId);
 		}
-		else if (documentStatus.equalsIgnoreCase(
-				KolanotInvoiceStatusMapping.CLOSED.statusName)) {
-
-			invoice.setBalanceDue(new BigDecimal(0.0));
-			invoice.setStatus(KolanotInvoiceStatusMapping.CLOSED.statusNumber);
+		else {
+			throw new PortalException("Can not update on closed invoices");
 		}
-
+//		else if (documentStatus.equalsIgnoreCase(
+//				KolanotInvoiceStatusMapping.CLOSED.statusName)) {
+//
+//			invoice.setBalanceDue(new BigDecimal(0.0));
+//			invoice.setStatus(KolanotInvoiceStatusMapping.CLOSED.statusNumber);
+//		}
+//
 		Date currentDate = new Date();
 
 		invoice.setModifiedDate(serviceContext.getModifiedDate(currentDate));
-		invoice.setDocumentStatus(documentStatus);
+		invoice.setDocumentDate(currentDate);
+//		invoice.setDocumentStatus(documentStatus);
 
 		return kolanotInvoicePersistence.update(invoice);
 	}
-	
+
+	public KolanotInvoice findInvoiceByOrderId(long commerceOrderId) throws NoSuchKolanotInvoiceException {
+		return kolanotInvoicePersistence.findByLinkWithOrder(commerceOrderId);
+	}
+
 	private int getInvoiceStatus(String documentStatus) throws PortalException {
 		return KolanotInvoiceStatusMapping.getStatusNumberByName(
 			documentStatus);
 	}
 
+	@Indexable(type = IndexableType.DELETE)
+	@Override
+	@SystemEvent(type = SystemEventConstants.TYPE_DELETE)
 	public KolanotInvoice deleteKolanotInvoice(long invoiceId)
 			throws PortalException {
 
@@ -212,6 +229,9 @@ public class KolanotInvoiceLocalServiceImpl
 
 	@Reference
 	private CommerceAccountLocalService _commerceAccountLocalService;
+
+	@Reference
+	private CommerceOrderLocalService _commerceOrderLocalService;
 
 	@Reference
 	private KolanotInvoiceLineLocalService _kolanotInvoiceLineLocalService;

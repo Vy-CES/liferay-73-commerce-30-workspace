@@ -1,0 +1,8 @@
+dependencies {
+	compileOnly group: "com.liferay.portal", name: "release.portal.api"
+	compileInclude group: 'org.apache.pdfbox', name: 'fontbox'
+	compileInclude group: 'org.apache.pdfbox', name: 'pdfbox'
+	compileInclude group: 'com.github.dhorions', name: 'boxable', version: '1.6'
+	compileInclude group: 'commons-io', name: 'commons-io'
+	compileOnly group: "com.liferay", name: "com.liferay.petra.string"
+}

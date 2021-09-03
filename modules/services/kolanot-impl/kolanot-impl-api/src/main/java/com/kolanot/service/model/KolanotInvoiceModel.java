@@ -151,6 +151,20 @@ public interface KolanotInvoiceModel
 	public void setCreatedByAccountId(long createdByAccountId);
 
 	/**
+	 * Returns the commerce order ID of this kolanot invoice.
+	 *
+	 * @return the commerce order ID of this kolanot invoice
+	 */
+	public long getCommerceOrderId();
+
+	/**
+	 * Sets the commerce order ID of this kolanot invoice.
+	 *
+	 * @param commerceOrderId the commerce order ID of this kolanot invoice
+	 */
+	public void setCommerceOrderId(long commerceOrderId);
+
+	/**
 	 * Returns the account external reference code of this kolanot invoice.
 	 *
 	 * @return the account external reference code of this kolanot invoice
@@ -227,6 +241,21 @@ public interface KolanotInvoiceModel
 	 */
 	@Override
 	public void setModifiedDate(Date modifiedDate);
+
+	/**
+	 * Returns the transaction ID of this kolanot invoice.
+	 *
+	 * @return the transaction ID of this kolanot invoice
+	 */
+	@AutoEscape
+	public String getTransactionId();
+
+	/**
+	 * Sets the transaction ID of this kolanot invoice.
+	 *
+	 * @param transactionId the transaction ID of this kolanot invoice
+	 */
+	public void setTransactionId(String transactionId);
 
 	/**
 	 * Returns the document number of this kolanot invoice.

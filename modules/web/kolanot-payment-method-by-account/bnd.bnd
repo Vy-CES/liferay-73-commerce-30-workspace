@@ -1,0 +1,4 @@
+Bundle-Name: kolanot-payment-method-by-account
+Bundle-SymbolicName: com.kolanot.commerce.payment.method.by.account
+Bundle-Version: 1.0.0
+Export-Package: com.kolanot.commerce.payment.method.by.account.constants
