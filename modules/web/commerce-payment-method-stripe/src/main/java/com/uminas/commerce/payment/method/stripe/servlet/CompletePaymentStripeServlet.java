@@ -61,7 +61,7 @@ public class CompletePaymentStripeServlet extends HttpServlet {
 			throws ServletException, IOException {
 		try {
 			HttpSession httpSession = httpServletRequest.getSession();
-
+			System.out.println("do get complete start");
 			if (PortalSessionThreadLocal.getHttpSession() == null) {
 				PortalSessionThreadLocal.setHttpSession(httpSession);
 			}
@@ -74,7 +74,7 @@ public class CompletePaymentStripeServlet extends HttpServlet {
 
 			long groupId = ParamUtil.getLong(httpServletRequest, "groupId");
 			String uuid = ParamUtil.getString(httpServletRequest, "uuid");
-			long invoiceId = ParamUtil.getLong(httpServletRequest, "invoiceIds");
+			long invoiceId = ParamUtil.getLong(httpServletRequest, "invoiceId");
 
 			CommerceOrder commerceOrder =
 					_commerceOrderLocalService.getCommerceOrderByUuidAndGroupId(
@@ -85,27 +85,37 @@ public class CompletePaymentStripeServlet extends HttpServlet {
 			String redirect = ParamUtil.getString(
 				httpServletRequest, "redirect");
 			
+			String sesstionId =  ParamUtil.getString(
+					httpServletRequest, StripeCommercePaymentMethodConstants.STRIPE_SESSION_ID);
+			
 			if (cancel) {
 				_commercePaymentEngine.cancelPayment(
 					commerceOrder.getCommerceOrderId(), null,
 					httpServletRequest);
 			}
 			else {
-				String transactionId = commerceOrder.getTransactionId();
-				
+
 				if(invoiceId <= 0) {
 					KolanotInvoice invoice = _kolanotInvoiceLocalService.findInvoiceByOrderId(commerceOrder.getCommerceOrderId());
 					invoiceId = invoice.getInvoiceId();
 				}
+				
+				KolanotInvoice currentInvoice = _kolanotInvoiceLocalService.fetchKolanotInvoice(invoiceId);
 
-				_kolanotInvoiceLocalService.updateKolanotInvoice(invoiceId, new BigDecimal(0), commerceOrder.getTotal(),  transactionId, new ServiceContext());
+				currentInvoice.setBalanceDue(new BigDecimal(0));
+				currentInvoice.setPaidSum(commerceOrder.getTotal());
+				currentInvoice.setDocumentStatus("closed");
+				_kolanotInvoiceLocalService.updateKolanotInvoice(currentInvoice);
+				
+				_commerceOrderLocalService.updateTransactionId(currentInvoice.getCommerceOrderId(), currentInvoice.getTransactionId());
 				
 				_log.info("Update invoice successfully");
 
 			}
+
 			String nextStep = ParamUtil.getString(
 					httpServletRequest, "nextStep");
-
+			System.out.println("do get complete ends");
 			if (Validator.isBlank(redirect)) {
 				httpServletResponse.sendRedirect(nextStep);
 			}

@@ -49,18 +49,17 @@ public class StripeCommercePaymentRequestProvider
 			HttpServletRequest httpServletRequest, Locale locale,
 			String returnUrl, String transactionId)
 		throws PortalException {
-		System.out.println("i");
+
 		CommerceOrder commerceOrder =
 			_commerceOrderLocalService.getCommerceOrder(commerceOrderId);
 
-		System.out.println("orderId: " + commerceOrderId);
-		System.out.println("transactionId: " + transactionId);
 		String sessionId = null;
 		String invoiceId = null;
 
 		if (httpServletRequest != null) {
 			sessionId = ParamUtil.getString(httpServletRequest, StripeCommercePaymentMethodConstants.STRIPE_SESSION_ID);
-			invoiceId = ParamUtil.getString(httpServletRequest, "invoiceIds");
+			invoiceId = ParamUtil.getString(httpServletRequest, "invoiceId");
+
 		}
 		
 		if (invoiceId != null) {

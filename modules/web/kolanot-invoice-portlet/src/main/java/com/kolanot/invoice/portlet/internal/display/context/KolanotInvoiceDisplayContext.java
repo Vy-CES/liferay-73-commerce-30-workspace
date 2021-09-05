@@ -55,7 +55,6 @@ import com.liferay.portal.kernel.util.TextFormatter;
 import com.liferay.portal.kernel.util.URLCodec;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.util.WebKeys;
-import com.liferay.portal.kernel.uuid.PortalUUIDUtil;
 import com.liferay.portal.kernel.workflow.WorkflowConstants;
 
 import java.io.Serializable;
@@ -97,7 +96,6 @@ public class KolanotInvoiceDisplayContext extends KolanotInvoiceBaseDisplayConte
         _commerceAccountService = commerceAccountService;
         _groupLocalService = groupLocalService;
         _portal = portal;
-        _kolanotInvoiceLineLocalService = kolanotInvoiceLineLocalService;
 	}
 
 	 public PortletURL getPortletURL() {
@@ -793,8 +791,8 @@ public class KolanotInvoiceDisplayContext extends KolanotInvoiceBaseDisplayConte
 	        PortletURL portletURL = liferayPortletResponse.createRenderURL();
 
 	        portletURL.setParameter(
-	                "mvcRenderCommandName", "viewKolanotCommerceInvoicePaymentConfirmation");
-	        portletURL.setParameter("invoiceIds", String.join(",", invoiceIds));
+	                "mvcRenderCommandName", "viewKolanotInvoice");
+	        portletURL.setParameter("invoiceId", String.join(",", invoiceIds));
 	        portletURL.setParameter("isSuccess", String.valueOf(isSuccess));
 
 	        return portletURL.toString();
@@ -880,8 +878,5 @@ public class KolanotInvoiceDisplayContext extends KolanotInvoiceBaseDisplayConte
     private final CommerceAccountService _commerceAccountService;
     private final GroupLocalService _groupLocalService;
     private final Portal _portal;
-    private BigDecimal accountHolderCreditNoteValue;
-    private String accountHolderCreditNoteIds;
     private BigDecimal multiBalanceDue;
-    private final KolanotInvoiceLineLocalService _kolanotInvoiceLineLocalService;
 }

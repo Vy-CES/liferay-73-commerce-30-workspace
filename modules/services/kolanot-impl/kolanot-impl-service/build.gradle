@@ -25,6 +25,7 @@ dependencies {
 	compileOnly group: "org.osgi", name: "org.osgi.service.component.annotations"
 	compileOnly group: "org.slf4j", name: "slf4j-api"
 	compileOnly project(":modules:services:kolanot-impl:kolanot-impl-api")
+	compileOnly project(":modules:web:sapphire-commerce-invoice-pdf-generator")
 }
 
 buildService {

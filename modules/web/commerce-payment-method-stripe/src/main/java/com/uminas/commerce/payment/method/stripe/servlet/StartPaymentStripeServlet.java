@@ -59,7 +59,7 @@ public class StartPaymentStripeServlet extends HttpServlet {
 			throws ServletException, IOException {
 		try {
 			HttpSession httpSession = httpServletRequest.getSession();
-
+			System.out.println("do get start starts");
 			if (PortalSessionThreadLocal.getHttpSession() == null) {
 				PortalSessionThreadLocal.setHttpSession(httpSession);
 			}
@@ -79,8 +79,6 @@ public class StartPaymentStripeServlet extends HttpServlet {
 		}
 	}
 
-
-	
 	private StripeGroupServiceConfiguration _getConfiguration(Long groupId) throws ConfigurationException {
 
 		return _configurationProvider.getConfiguration(StripeGroupServiceConfiguration.class,

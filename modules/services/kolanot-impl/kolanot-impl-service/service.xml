@@ -92,4 +92,7 @@
 			<finder-column name="invoiceId" />
 		</finder>
 	</entity>
+
+	<entity local-service="true" name="InvoiceGenerator" remote-service="false">
+	</entity>
 </service-builder>

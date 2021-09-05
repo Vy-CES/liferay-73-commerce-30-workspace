@@ -24,8 +24,11 @@ import com.liferay.commerce.account.model.CommerceAccount;
 import com.liferay.commerce.account.service.CommerceAccountLocalService;
 import com.liferay.commerce.constants.CommerceOrderConstants;
 import com.liferay.commerce.model.CommerceOrder;
+import com.liferay.commerce.model.CommerceOrderPayment;
 import com.liferay.commerce.service.CommerceOrderLocalService;
+import com.liferay.commerce.service.CommerceOrderPaymentLocalService;
 import com.liferay.portal.aop.AopService;
+import com.liferay.portal.kernel.dao.orm.QueryUtil;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.model.SystemEventConstants;
 import com.liferay.portal.kernel.search.Indexable;
@@ -127,8 +130,18 @@ public class KolanotInvoiceLocalServiceImpl
 
 		kolanotInvoiceLocalService.addKolanotInvoice(invoice);
 
-		linkedOrder.setStatus(CommerceOrderConstants.ORDER_STATUS_PROCESSING);
+		List<CommerceOrderPayment> orderPayments =  _commerceOrderPaymentService.getCommerceOrderPayments(commerceOrderId, QueryUtil.ALL_POS, QueryUtil.ALL_POS, null);
+		System.out.println("Create invoice with order payment: " + orderPayments.size());
+		for(CommerceOrderPayment payment: orderPayments) {
+			System.out.println(payment.getCommerceOrderPaymentId());
+			payment.setCommercePaymentMethodKey("stripe");
+			
+			_commerceOrderPaymentService.updateCommerceOrderPayment(payment);
+		}
+
+//		linkedOrder.setStatus(CommerceOrderConstants.ORDER_STATUS_PROCESSING);
 		linkedOrder.setCommercePaymentMethodKey("stripe");
+
 		_commerceOrderLocalService.updateCommerceOrder(linkedOrder);
 
 		return invoice;
@@ -232,6 +245,9 @@ public class KolanotInvoiceLocalServiceImpl
 
 	@Reference
 	private CommerceOrderLocalService _commerceOrderLocalService;
+
+	@Reference
+	private CommerceOrderPaymentLocalService _commerceOrderPaymentService;
 
 	@Reference
 	private KolanotInvoiceLineLocalService _kolanotInvoiceLineLocalService;

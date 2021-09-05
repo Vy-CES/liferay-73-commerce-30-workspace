@@ -265,7 +265,8 @@
 		var a = document.createElement('a');
 		a.style.display = 'none';
 		a.href = "/o/invoice-pdf-generator?invoiceId=" + id;
-		a.click();
+		console.log(a);
+		//a.click();
 	}
 
 	var onCommerceAccountSelected = function() {

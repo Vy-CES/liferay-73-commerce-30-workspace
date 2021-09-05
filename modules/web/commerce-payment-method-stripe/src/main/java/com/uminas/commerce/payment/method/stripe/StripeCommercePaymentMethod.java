@@ -16,6 +16,8 @@
  ******************************************************************************/
 package com.uminas.commerce.payment.method.stripe;
 
+import com.kolanot.service.model.KolanotInvoice;
+import com.kolanot.service.service.KolanotInvoiceLocalService;
 import com.liferay.commerce.constants.CommerceOrderConstants;
 import com.liferay.commerce.constants.CommerceOrderPaymentConstants;
 import com.liferay.commerce.constants.CommercePaymentConstants;
@@ -41,10 +43,7 @@ import com.liferay.portal.kernel.util.Portal;
 import com.liferay.portal.kernel.util.ResourceBundleUtil;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.stripe.Stripe;
-import com.stripe.model.PaymentIntent;
 import com.stripe.model.checkout.Session;
-import com.stripe.model.issuing.Transaction;
-import com.stripe.param.PaymentIntentCreateParams;
 import com.stripe.param.checkout.SessionCreateParams;
 import com.stripe.param.checkout.SessionCreateParams.LineItem;
 import com.uminas.commerce.payment.method.stripe.configuration.StripeGroupServiceConfiguration;
@@ -130,6 +129,7 @@ public class StripeCommercePaymentMethod implements CommercePaymentMethod {
 	public CommercePaymentResult processPayment(CommercePaymentRequest commercePaymentRequest) throws Exception {
 		StripeCommercePaymentRequest stripeCommercePaymentRequest = (StripeCommercePaymentRequest) commercePaymentRequest;
 
+		System.out.println("a");
 		CommerceOrder commerceOrder = _commerceOrderLocalService
 				.getCommerceOrder(stripeCommercePaymentRequest.getCommerceOrderId());
 
@@ -165,16 +165,22 @@ public class StripeCommercePaymentMethod implements CommercePaymentMethod {
 		int status = CommerceOrderConstants.PAYMENT_STATUS_AUTHORIZED;
 	
 		List<String> messages = Arrays.asList();
-		System.out.println("1");
-		return new CommercePaymentResult(session.getId(), commercePaymentRequest.getCommerceOrderId(), 
+
+		CommercePaymentResult commerceResult = new CommercePaymentResult(session.getId(), commercePaymentRequest.getCommerceOrderId(), 
 				status, true,
 				url, null, messages,true );
+
+		KolanotInvoice currentInvoice = _kolanotInvoiceLocalService.findInvoiceByOrderId(commerceOrder.getCommerceOrderId());
+		currentInvoice.setTransactionId(session.getId());
+		_kolanotInvoiceLocalService.updateKolanotInvoice(currentInvoice);
+
+		return commerceResult;
 
 	}
 
 	private List<LineItem> _getItems(CommerceOrder commerceOrder, Locale locale)
 			throws PortalException {
-
+			
 			String languageId = LanguageUtil.getLanguageId(locale);
 
 			List<CommerceOrderItem> commerceOrderItems =
@@ -368,8 +374,9 @@ public class StripeCommercePaymentMethod implements CommercePaymentMethod {
 	@Override
 	public CommercePaymentResult completePayment(CommercePaymentRequest commercePaymentRequest) throws Exception {
 		boolean success = true;
-
 		StripeCommercePaymentRequest stripeCommercePaymentRequest = (StripeCommercePaymentRequest) commercePaymentRequest;
+
+		System.out.println("complete payment");
 		
 		List<String> messages = Collections.emptyList();
 	
@@ -391,6 +398,9 @@ public class StripeCommercePaymentMethod implements CommercePaymentMethod {
 
 	@Reference
 	private CommerceOrderLocalService _commerceOrderLocalService;
+
+	@Reference
+	private KolanotInvoiceLocalService _kolanotInvoiceLocalService;
 
 	@Reference
 	private ConfigurationProvider _configurationProvider;
