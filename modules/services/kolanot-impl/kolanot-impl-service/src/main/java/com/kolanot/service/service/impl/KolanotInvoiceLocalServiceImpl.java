@@ -114,7 +114,7 @@ public class KolanotInvoiceLocalServiceImpl
 //		invoice.setDocumentNumber(documentNumber);
 		invoice.setDocumentStatus("open");
 //		invoice.setDueDate(dueDate);
-//		invoice.setDocumentDate(documentDate);
+		invoice.setDocumentDate(currentDate);
 //		invoice.setCarrier(carrier);
 //		invoice.setTrackingNumber(trackingNumber);
 //		invoice.setTrackingURL(trackingURL);

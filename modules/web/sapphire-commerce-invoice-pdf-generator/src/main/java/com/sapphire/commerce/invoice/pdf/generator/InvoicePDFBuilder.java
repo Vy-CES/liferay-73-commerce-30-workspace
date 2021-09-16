@@ -149,13 +149,6 @@ public class InvoicePDFBuilder {
 
         contentStream.setNonStrokingColor(Color.BLACK);
         contentStream.beginText();
-        contentStream.setFont(PDType1Font.HELVETICA, fontSize);
-        contentStream.newLineAtOffset(margin, startTextY);
-        //TODO: Reward level
-        contentStream.showText("*Sapphire Reward Level:LEVEL03");
-        contentStream.endText();
-
-        contentStream.beginText();
         contentStream.setFont(PDType1Font.HELVETICA_BOLD, fontSize);
         contentStream.newLineAtOffset(margin, startTextY - lineSpacing);
         contentStream.showText("Note:Out of Stock Items will not be Backordered.");
@@ -179,13 +172,6 @@ public class InvoicePDFBuilder {
         contentStream.setFont(PDType1Font.HELVETICA, fontSize);
         contentStream.newLineAtOffset(margin, secondLineTextStartY - (lineSpacing * 2));
         contentStream.showText("We accept Mastercard and Visa.");
-        contentStream.endText();
-
-        contentStream.beginText();
-        contentStream.setFont(PDType1Font.HELVETICA, fontSize);
-        contentStream.newLineAtOffset(margin, secondLineTextStartY - (lineSpacing * 3));
-        //TODO: Bank Account
-        contentStream.showText("EFT:BSB:062-000 Acc No:19273734 Acc Name:Sapphire Group Pty Ltd");
         contentStream.endText();
 
         contentStream.close();
@@ -265,13 +251,10 @@ public class InvoicePDFBuilder {
         float cellLeftWidth = 35f;
         float cellRightWidth = 25f;
 
-        String[] balanceValueHeaderTable = new String[6];
-        balanceValueHeaderTable[0] = "Subtotal:";
-        balanceValueHeaderTable[1] = "Freight:";
-        balanceValueHeaderTable[2] = "GST:";
-        balanceValueHeaderTable[3] = "Total:";
-        balanceValueHeaderTable[4] = "Paid:";
-        balanceValueHeaderTable[5] = "Balance:";
+        String[] balanceValueHeaderTable = new String[3];
+        balanceValueHeaderTable[0] = "Total:";
+        balanceValueHeaderTable[1] = "Paid:";
+        balanceValueHeaderTable[2] = "Balance:";
 
         Row<PDPage> row;
         Cell<PDPage> cell1;
@@ -382,16 +365,16 @@ public class InvoicePDFBuilder {
             PDPageContentStream contentStream = new PDPageContentStream(doc, page, PDPageContentStream.AppendMode.APPEND, true, false);
             contentStream.setNonStrokingColor(Color.BLACK);
 
-            Image logo1 = new Image(ImageIO.read(InvoicePDFBuilder.class.getResource("/logo/logo1.png")));
+            Image logo1 = new Image(ImageIO.read(InvoicePDFBuilder.class.getResource("/logo/kolanot_brand_logo-high.jpg")));
             float imageWidth = 300;
             logo1 = logo1.scaleByWidth(imageWidth);
             logo1.draw(doc, new PageContentStreamOptimized(contentStream), 155f, 800f);
 
-            Image logo2 = new Image(ImageIO.read(InvoicePDFBuilder.class.getResource("/logo/logo2.png")));
-            logo2 = logo2.scaleByWidth(imageWidth);
-            logo2.draw(doc, new PageContentStreamOptimized(contentStream), 155f, 770f);
+//            Image logo2 = new Image(ImageIO.read(InvoicePDFBuilder.class.getResource("/logo/logo2.png")));
+//            logo2 = logo2.scaleByWidth(imageWidth);
+//            logo2.draw(doc, new PageContentStreamOptimized(contentStream), 155f, 770f);
 
-            writeSapphireAddress(contentStream, margin);
+            writeInvoiceAddress(contentStream, margin);
 
             float yStart1 = 700;
 
@@ -453,8 +436,7 @@ public class InvoicePDFBuilder {
         titles[1] = "PO No:";
         titles[2] = "Ordered By:";
         titles[3] = "Account No:";
-        titles[4] = "Terms:";
-        titles[5] = "Currency:";
+        titles[4] = "Currency:";
 
 
         for (int i = 0; i < titles.length; i++) {
@@ -472,27 +454,27 @@ public class InvoicePDFBuilder {
         table1.draw();
     }
 
-    private static void writeSapphireAddress(PDPageContentStream contentStream, float margin) throws IOException {
+    private static void writeInvoiceAddress(PDPageContentStream contentStream, float margin) throws IOException {
         //TODO: SAPPHIRE info
         float startY = 700;
-        float fontSize = 7;
+        float fontSize = 6;
 
         contentStream.beginText();
         contentStream.setFont(PDType1Font.HELVETICA_BOLD, 12);
         contentStream.newLineAtOffset(margin, startY);
-        contentStream.showText("Sapphire Group Pty Ltd");
-        contentStream.endText();;
+        contentStream.showText("Kolanot");
+        contentStream.endText();
 
         contentStream.beginText();
         contentStream.setFont(PDType1Font.HELVETICA, fontSize);
         contentStream.newLineAtOffset(margin, startY - 15);
-        contentStream.showText("Unit 12, 2-8South Street");
+        contentStream.showText("Global Transportation Intelligence and Logistics Research");
         contentStream.endText();
 
         contentStream.beginText();
         contentStream.setFont(PDType1Font.HELVETICA, fontSize);
         contentStream.newLineAtOffset(margin, startY - 25);
-        contentStream.showText("RYDALMERE NSW 2116");
+        contentStream.showText("Manchester, United Kingdom");
         contentStream.endText();
 
         contentStream.beginText();
@@ -504,19 +486,7 @@ public class InvoicePDFBuilder {
         contentStream.beginText();
         contentStream.setFont(PDType1Font.HELVETICA, fontSize);
         contentStream.newLineAtOffset(margin + 10, startY - 35);
-        contentStream.showText("+61 2 9757 3080");
-        contentStream.endText();
-
-        contentStream.beginText();
-        contentStream.setFont(PDType1Font.HELVETICA_BOLD, fontSize);
-        contentStream.newLineAtOffset(margin + 70, startY - 35);
-        contentStream.showText("F:");
-        contentStream.endText();
-
-        contentStream.beginText();
-        contentStream.setFont(PDType1Font.HELVETICA, fontSize);
-        contentStream.newLineAtOffset(margin + 80, startY - 35);
-        contentStream.showText("+61 2 9757 2089");
+        contentStream.showText("+07387001059");
         contentStream.endText();
 
         contentStream.beginText();
@@ -528,20 +498,9 @@ public class InvoicePDFBuilder {
         contentStream.beginText();
         contentStream.setFont(PDType1Font.HELVETICA, fontSize);
         contentStream.newLineAtOffset(margin + 25, startY - 45);
-        contentStream.showText("orders@sapphiregroup.com.au");
+        contentStream.showText("ransome.g@googlemail.com");
         contentStream.endText();
 
-        contentStream.beginText();
-        contentStream.setFont(PDType1Font.HELVETICA_BOLD, fontSize);
-        contentStream.newLineAtOffset(margin, startY - 55);
-        contentStream.showText("ABN:");
-        contentStream.endText();
-
-        contentStream.beginText();
-        contentStream.setFont(PDType1Font.HELVETICA, fontSize);
-        contentStream.newLineAtOffset(margin + 20, startY - 55);
-        contentStream.showText("39 106 892 406");
-        contentStream.endText();
     }
 
     private static PDPage addNewPage(PDDocument doc) {

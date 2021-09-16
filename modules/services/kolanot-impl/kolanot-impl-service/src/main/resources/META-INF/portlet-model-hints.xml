@@ -1,6 +1,11 @@
 <?xml version="1.0"?>
 
 <model-hints>
+	<model name="com.kolanot.service.model.InvoicePayment">
+		<field name="invoicePaymentId" type="long" />
+		<field name="transactionid" type="String" />
+		<field name="invoiceId" type="long" />
+	</model>
 	<model name="com.kolanot.service.model.KolanotInvoice">
 		<field name="uuid" type="String" />
 		<field name="externalReferenceCode" type="String" />

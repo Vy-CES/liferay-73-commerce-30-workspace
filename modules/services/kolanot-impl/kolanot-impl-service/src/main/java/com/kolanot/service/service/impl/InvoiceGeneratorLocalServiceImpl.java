@@ -18,6 +18,7 @@ import com.kolanot.service.model.KolanotInvoice;
 import com.kolanot.service.service.base.InvoiceGeneratorLocalServiceBaseImpl;
 import com.liferay.commerce.account.model.CommerceAccount;
 import com.liferay.commerce.account.service.CommerceAccountLocalService;
+import com.liferay.commerce.currency.model.CommerceCurrency;
 import com.liferay.commerce.model.CommerceAddress;
 import com.liferay.commerce.model.CommerceOrder;
 import com.liferay.commerce.model.CommerceOrderItem;
@@ -28,6 +29,7 @@ import com.liferay.portal.aop.AopService;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
+import com.liferay.portal.kernel.util.LocaleUtil;
 import com.sapphire.commerce.invoice.pdf.generator.InvoicePDFBuilder;
 import com.sapphire.commerce.invoice.pdf.generator.constants.InvoicePDFGeneratorConstants;
 
@@ -128,33 +130,19 @@ public class InvoiceGeneratorLocalServiceImpl
 	}
 
 	private String[] buildBalanceValueTable(KolanotInvoice invoice) {
-		String[] balanceValueTable = new String[6];
+		String[] balanceValueTable = new String[3];
+
 		balanceValueTable[0] = String.valueOf(
-			invoice.getSubTotal(
-			).setScale(
-				2, RoundingMode.CEILING
-			));
-		balanceValueTable[1] = String.valueOf(
-			invoice.getFreightAmount(
-			).setScale(
-				2, RoundingMode.CEILING
-			));
-		balanceValueTable[2] = String.valueOf(
-			invoice.getGst(
-			).setScale(
-				2, RoundingMode.CEILING
-			));
-		balanceValueTable[3] = String.valueOf(
 			invoice.getInvoiceTotal(
 			).setScale(
 				2, RoundingMode.CEILING
 			));
-		balanceValueTable[4] = String.valueOf(
+		balanceValueTable[1] = String.valueOf(
 			invoice.getPaidSum(
 			).setScale(
 				2, RoundingMode.CEILING
 			));
-		balanceValueTable[5] = String.valueOf(
+		balanceValueTable[2] = String.valueOf(
 			invoice.getBalanceDue(
 			).setScale(
 				2, RoundingMode.CEILING
@@ -165,11 +153,14 @@ public class InvoiceGeneratorLocalServiceImpl
 
 	private String[] buildInvoiceInfoTableData(
 		KolanotInvoice commerceInvoice,
-		CommerceAccount commerceAccount) {
+		CommerceAccount commerceAccount) throws PortalException {
 
 		String[] invoiceInfoTable = new String[7];
 		invoiceInfoTable[0] = String.valueOf(
 			commerceInvoice.getDocumentNumber());
+
+		CommerceOrder order = _commerceOrderLocalService.getCommerceOrder(commerceInvoice.getCommerceOrderId());
+		CommerceCurrency currency = order.getCommerceCurrency();
 
 		SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
 
@@ -191,9 +182,7 @@ public class InvoiceGeneratorLocalServiceImpl
 		invoiceInfoTable[3] = commerceAccount.getName();
 		invoiceInfoTable[4] = commerceAccount.getExternalReferenceCode();
 		//TODO: Terms
-		invoiceInfoTable[5] = "30 Days EOM";
-		//TODO: Currency
-		invoiceInfoTable[6] = "AUD";
+		invoiceInfoTable[5] = currency.getCode();
 
 		return invoiceInfoTable;
 	}
@@ -220,7 +209,7 @@ public class InvoiceGeneratorLocalServiceImpl
 		String[] productInformation = new String[9];
 
 		productInformation[0] = String.valueOf(commerceOrderItem.getCommerceOrderItemId());
-		productInformation[1] = commerceOrderItem.getName();
+		productInformation[1] = commerceOrderItem.getName(LocaleUtil.getDefault());
 		productInformation[2] = String.valueOf(
 			commerceOrderItem.getCommerceOrderId());
 		productInformation[3] = "0"; //TODO: BackOrder
@@ -279,4 +268,5 @@ public class InvoiceGeneratorLocalServiceImpl
 
 	@Reference
 	private CommerceOrderItemLocalService _commerceOrderItemLocalService;
+
 }

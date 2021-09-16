@@ -1,3 +1,9 @@
+create table kolanot_InvoicePayment (
+	invoicePaymentId LONG not null primary key,
+	transactionid VARCHAR(75) null,
+	invoiceId LONG
+);
+
 create table kolanot_KolanotInvoice (
 	uuid_ VARCHAR(75) null,
 	externalReferenceCode VARCHAR(75) null,

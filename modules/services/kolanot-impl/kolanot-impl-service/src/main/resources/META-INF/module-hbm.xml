@@ -2,8 +2,16 @@
 <!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
 
 <hibernate-mapping auto-import="false" default-lazy="false">
+	<import class="com.kolanot.service.model.InvoicePayment" />
 	<import class="com.kolanot.service.model.KolanotInvoice" />
 	<import class="com.kolanot.service.model.KolanotInvoiceLine" />
+	<class name="com.kolanot.service.model.impl.InvoicePaymentImpl" table="kolanot_InvoicePayment">
+		<id access="com.liferay.portal.dao.orm.hibernate.LiferayPropertyAccessor" name="invoicePaymentId" type="long">
+			<generator class="assigned" />
+		</id>
+		<property access="com.liferay.portal.dao.orm.hibernate.LiferayPropertyAccessor" name="transactionid" type="com.liferay.portal.dao.orm.hibernate.StringType" />
+		<property access="com.liferay.portal.dao.orm.hibernate.LiferayPropertyAccessor" name="invoiceId" type="com.liferay.portal.dao.orm.hibernate.LongType" />
+	</class>
 	<class name="com.kolanot.service.model.impl.KolanotInvoiceImpl" table="kolanot_KolanotInvoice">
 		<id access="com.liferay.portal.dao.orm.hibernate.LiferayPropertyAccessor" name="invoiceId" type="long">
 			<generator class="assigned" />

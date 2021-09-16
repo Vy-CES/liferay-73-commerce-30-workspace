@@ -16,6 +16,7 @@ package com.kolanot.service.service.base;
 
 import com.kolanot.service.model.KolanotInvoice;
 import com.kolanot.service.service.KolanotInvoiceService;
+import com.kolanot.service.service.persistence.InvoicePaymentPersistence;
 import com.kolanot.service.service.persistence.KolanotInvoiceLinePersistence;
 import com.kolanot.service.service.persistence.KolanotInvoicePersistence;
 
@@ -106,6 +107,9 @@ public abstract class KolanotInvoiceServiceBaseImpl
 			throw new SystemException(exception);
 		}
 	}
+
+	@Reference
+	protected InvoicePaymentPersistence invoicePaymentPersistence;
 
 	@Reference
 	protected com.kolanot.service.service.KolanotInvoiceLocalService

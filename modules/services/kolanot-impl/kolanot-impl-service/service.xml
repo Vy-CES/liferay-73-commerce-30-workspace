@@ -95,4 +95,15 @@
 
 	<entity local-service="true" name="InvoiceGenerator" remote-service="false">
 	</entity>
+
+	<entity local-service="true" name="InvoicePayment" remote-service="false">
+		<column name="invoicePaymentId"  primary="true"  type="long" />
+		<column name="transactionid" type="String" />
+		<column name="invoiceId" type="long" />
+		
+		<finder name="InvoiceId" return-type="Collection">
+			<finder-column name="invoiceId" />
+		</finder>
+	</entity>
+	
 </service-builder>

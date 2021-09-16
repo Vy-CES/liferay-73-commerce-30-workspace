@@ -51,13 +51,10 @@ public class DownloadPDFInvoiceServlet extends HttpServlet {
 
 	@Override
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-		System.out.println("HERERERERER!!!!!!");
 
 		File invoicePDFFile;
 		try {
 			long invoiceId = ParamUtil.getLong(req, "invoiceId");
-
-			System.out.println("invoiceId: " + invoiceId);
 
 			User user = _portal.getUser(req);
 

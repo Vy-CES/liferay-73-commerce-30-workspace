@@ -1,3 +1,5 @@
+create index IX_A3A47554 on kolanot_InvoicePayment (invoiceId);
+
 create index IX_CF57C8F2 on kolanot_KolanotInvoice (accountExternalReferenceCode[$COLUMN_LENGTH:75$]);
 create index IX_4B9B1D40 on kolanot_KolanotInvoice (commerceOrderId);
 create index IX_50C8C273 on kolanot_KolanotInvoice (companyId, externalReferenceCode[$COLUMN_LENGTH:75$]);

@@ -51,7 +51,8 @@ public class InvoicePDFGeneratorConstants {
     public static final String INVOICED_QTY = "Invoiced Qty";
     public static final String PRICE = "Price";
     public static final String DISCOUNT_PERCENT = "Disc %";
-    public static final String TOTAL = "Total AUD";
+    public static final String TOTAL = "Total";
+    public static final String CURRENCY = "Currency";
 
     public static final Color GRAY_COLOR = new Color(173, 173, 173);
 
