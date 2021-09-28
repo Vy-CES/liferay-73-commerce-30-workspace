@@ -1,4 +1,4 @@
-Bundle-Name: sapphire-commerce-payment-method-override
-Bundle-SymbolicName: com.sapphire.commerce.payment.method.override
+Bundle-Name: kolanot-payment-method-override
+Bundle-SymbolicName: com.kolanot.payment.method.override
 Bundle-Version: 1.0.0
-Web-ContextPath: /sapphire-payment-method
+Web-ContextPath: /kolanot-payment-method

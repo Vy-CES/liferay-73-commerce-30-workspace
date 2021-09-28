@@ -43,13 +43,6 @@
 		%>
 
 		<div class="col-12 row">
-			<div class="form-group" id="<portlet:namespace />invoicePaymentType">
-                <aui:input checked='<%= isFullPayment %>' label="sapphire-invoice-full-payment" name="isFullPayment" value="<%= true %>" type="radio" onChange='<%= liferayPortletResponse.getNamespace() + "isFullPayment(true);" %>' />
-                <aui:input checked='<%= !isFullPayment %>' label="sapphire-invoice-partial-payment" name="isFullPayment" value="<%= false %>" type="radio" onChange='<%= liferayPortletResponse.getNamespace() + "isFullPayment(false);" %>' />
-            </div>
-		
-		</div>
-		<div class="col-12 row">
 			<div class="col-6 float-left">
 				<div class="info-box py-3">
 					<header class="header pb-2">

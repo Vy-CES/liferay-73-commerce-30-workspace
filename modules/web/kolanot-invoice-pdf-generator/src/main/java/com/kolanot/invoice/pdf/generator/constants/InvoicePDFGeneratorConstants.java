@@ -1,4 +1,4 @@
-package com.sapphire.commerce.invoice.pdf.generator.constants;
+package com.kolanot.invoice.pdf.generator.constants;
 
 import java.awt.*;
 

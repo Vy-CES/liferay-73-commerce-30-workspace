@@ -1,12 +1,17 @@
-package com.sapphire.commerce.invoice.pdf.generator;
+package com.kolanot.invoice.pdf.generator;
 
-import be.quodlibet.boxable.*;
-import be.quodlibet.boxable.image.Image;
-import be.quodlibet.boxable.line.LineStyle;
-import be.quodlibet.boxable.utils.FontUtils;
-import be.quodlibet.boxable.utils.PDStreamUtils;
-import be.quodlibet.boxable.utils.PageContentStreamOptimized;
-import com.sapphire.commerce.invoice.pdf.generator.constants.InvoicePDFGeneratorConstants;
+import com.kolanot.invoice.pdf.generator.constants.InvoicePDFGeneratorConstants;
+
+import java.awt.Color;
+import java.io.File;
+import java.io.IOException;
+import java.text.MessageFormat;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.List;
+
+import javax.imageio.ImageIO;
+
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
@@ -14,14 +19,16 @@ import org.apache.pdfbox.pdmodel.PDPageTree;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.font.PDType1Font;
 
-import javax.imageio.ImageIO;
-import java.awt.*;
-import java.io.File;
-import java.io.IOException;
-import java.text.MessageFormat;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.List;
+import be.quodlibet.boxable.BaseTable;
+import be.quodlibet.boxable.Cell;
+import be.quodlibet.boxable.HorizontalAlignment;
+import be.quodlibet.boxable.Row;
+import be.quodlibet.boxable.VerticalAlignment;
+import be.quodlibet.boxable.image.Image;
+import be.quodlibet.boxable.line.LineStyle;
+import be.quodlibet.boxable.utils.FontUtils;
+import be.quodlibet.boxable.utils.PDStreamUtils;
+import be.quodlibet.boxable.utils.PageContentStreamOptimized;
 
 public class InvoicePDFBuilder {
 
