@@ -31,6 +31,7 @@
 	}
 	Format dateFormatDateTime = FastDateFormatFactoryUtil.getSimpleDateFormat("MMM dd, yyyy", locale, timeZone);
 	String commerceChannelCurrencyCode = kolanotInvoiceDisplayContext.getCommerceChannelCurrencyCode();
+	BigDecimal invoiceBalanceDue = kolanotInvoice.getBalanceDue();
 %>
 
 <c:choose>
@@ -40,14 +41,31 @@
 
 		<%
 		List<String> paymentTransactionId = kolanotInvoiceDisplayContext.getTransactionIdsByInvoiceId(kolanotInvoice.getInvoiceId());
+		boolean isFullPayment = true;
 		%>
 
 		<div class="col-12 row">
-			<div class="form-group" id="<portlet:namespace />invoicePaymentType">
-                <aui:input checked='<%= isFullPayment %>' label="sapphire-invoice-full-payment" name="isFullPayment" value="<%= true %>" type="radio" onChange='<%= liferayPortletResponse.getNamespace() + "isFullPayment(true);" %>' />
-                <aui:input checked='<%= !isFullPayment %>' label="sapphire-invoice-partial-payment" name="isFullPayment" value="<%= false %>" type="radio" onChange='<%= liferayPortletResponse.getNamespace() + "isFullPayment(false);" %>' />
-            </div>
-		
+		    <div class="col-6" style="text-align: left;">
+		        <div>
+		            <div class="form-group" id="<portlet:namespace />invoicePaymentType">
+                        <aui:input checked='<%= isFullPayment %>' label="full-payment" name="isFullPayment" value="<%= isFullPayment %>" type="radio" onChange='<%= liferayPortletResponse.getNamespace() + "isFullPayment(true);" %>' />
+                        <aui:input checked='<%= !isFullPayment %>' label="partial-payment" name="isFullPayment" value="<%= !isFullPayment %>" type="radio" onChange='<%= liferayPortletResponse.getNamespace() + "isFullPayment(false);" %>' />
+                    </div>
+
+                    <div id="<portlet:namespace />partialPaymentInput" class="d-none">
+                        <aui:form>
+                            <aui:input label="please-invoice-partial-payment-amount" name="partialPaymentAmount" required="<%= !isFullPayment %>"
+                                suffix="<%= HtmlUtil.escape(commerceChannelCurrencyCode) %>" type="text" placeholder="Enter amount"
+                                onChange='<%= liferayPortletResponse.getNamespace() + "changePartialAmount(this);" %>'>
+
+                                <aui:validator name="min">1</aui:validator>
+                                <aui:validator name="max"><%= invoiceBalanceDue %></aui:validator>
+                                <aui:validator name="number" />
+                            </aui:input>
+                        </aui:form>
+                    </div>
+		        </div>
+		    </div>
 		</div>
 		<div class="col-12 row">
 			<div class="col-6 float-left">
@@ -264,7 +282,6 @@
 		var url = new URL(
 						'<%= kolanotInvoiceDisplayContext.getPaymentServletUrl(kolanotInvoices) %>'
 		);
-		//console.log(url.href);
 		window.location.replace(url.href);
 	}
 
@@ -280,4 +297,36 @@
 		   window.location.reload();
 	};
 	Liferay.on('accountSelected', ({accountId}) => onCommerceAccountSelected());
+
+	function <portlet:namespace />isFullPayment(isFullPayment) {
+            document.getElementById('<portlet:namespace />invoicePaymentType').value = isFullPayment;
+            var partialPaymentInputElement = document.getElementById('<portlet:namespace />partialPaymentInput');
+            var fullPaymentLinkElement = document.getElementById('<portlet:namespace />fullPaymentLink');
+            var partialPaymentLinkElement = document.getElementById('<portlet:namespace />partialPaymentLink');
+
+            if (!isFullPayment) {
+                partialPaymentInputElement.classList.remove("d-none");
+                partialPaymentLinkElement.classList.remove("d-none");
+                fullPaymentLinkElement.classList.add("d-none");
+            } else {
+                partialPaymentInputElement.classList.add("d-none");
+                fullPaymentLinkElement.classList.remove("d-none");
+                partialPaymentLinkElement.href = "javascript: void(0)";
+                partialPaymentLinkElement.classList.add("d-none");
+            }
+        }
+
+        function <portlet:namespace />changePartialAmount(amount) {
+            var partialPaymentLinkElement = document.getElementById('<portlet:namespace />partialPaymentLink');
+            var url = new URL(document.getElementById('<portlet:namespace />fullPaymentLink').href);
+            var searchParams = url.searchParams;
+            var invoiceBalanceDue = searchParams.get('invoiceBalanceDue');
+            if (amount != null && !isNaN(amount.value) && amount.value > 0 && amount.value <= +invoiceBalanceDue) {
+                searchParams.set('invoiceBalanceDue', amount.value);
+                url.search = searchParams.toString();
+                partialPaymentLinkElement.href = url.toString();
+            } else {
+                partialPaymentLinkElement.href = "javascript: void(0)";
+            }
+        }
 </aui:script>

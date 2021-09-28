@@ -43,7 +43,13 @@ import com.liferay.portal.kernel.util.Portal;
 import com.liferay.portal.kernel.util.ResourceBundleUtil;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.stripe.Stripe;
+import com.stripe.model.Invoice;
+import com.stripe.model.InvoiceItem;
+import com.stripe.model.Product;
 import com.stripe.model.checkout.Session;
+import com.stripe.param.InvoiceCreateParams;
+import com.stripe.param.InvoiceItemCreateParams;
+import com.stripe.param.ProductCreateParams;
 import com.stripe.param.checkout.SessionCreateParams;
 import com.stripe.param.checkout.SessionCreateParams.LineItem;
 import com.uminas.commerce.payment.method.stripe.configuration.StripeGroupServiceConfiguration;
@@ -129,7 +135,6 @@ public class StripeCommercePaymentMethod implements CommercePaymentMethod {
 	public CommercePaymentResult processPayment(CommercePaymentRequest commercePaymentRequest) throws Exception {
 		StripeCommercePaymentRequest stripeCommercePaymentRequest = (StripeCommercePaymentRequest) commercePaymentRequest;
 
-		System.out.println("a");
 		CommerceOrder commerceOrder = _commerceOrderLocalService
 				.getCommerceOrder(stripeCommercePaymentRequest.getCommerceOrderId());
 
@@ -165,6 +170,32 @@ public class StripeCommercePaymentMethod implements CommercePaymentMethod {
 		int status = CommerceOrderConstants.PAYMENT_STATUS_AUTHORIZED;
 	
 		List<String> messages = Arrays.asList();
+		
+		
+		ProductCreateParams productParams =
+				ProductCreateParams.builder().setName("Starter Dashboard").build();
+
+		Product product = Product.create(productParams);
+		
+		InvoiceItemCreateParams invoiceItemParams =
+		  InvoiceItemCreateParams.builder()
+		    .setCustomer("cus_4fdAW5ftNQow1a")
+		    .setAmount(100l)
+		    .build();
+
+		InvoiceItem.create(invoiceItemParams);
+
+		InvoiceCreateParams invoiceParams =
+		  InvoiceCreateParams.builder()
+		    .setCustomer("cus_4fdAW5ftNQow1a")
+		    .setAutoAdvance(true) // auto-finalize this draft after ~1 hour
+		    .build();
+
+		Invoice invoice = Invoice.create(invoiceParams);
+		invoice.finalizeInvoice();
+		
+		System.out.println(invoice.getHostedInvoiceUrl());
+
 
 		CommercePaymentResult commerceResult = new CommercePaymentResult(session.getId(), commercePaymentRequest.getCommerceOrderId(), 
 				status, true,

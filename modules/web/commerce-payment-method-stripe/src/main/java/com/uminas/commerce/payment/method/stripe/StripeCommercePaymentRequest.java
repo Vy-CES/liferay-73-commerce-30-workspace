@@ -28,6 +28,10 @@ import javax.servlet.http.HttpServletRequest;
  */
 public class StripeCommercePaymentRequest extends CommercePaymentRequest {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	public StripeCommercePaymentRequest(
 		BigDecimal amount, String cancelUrl, long commerceOrderId,
 		Locale locale, String sessionId, HttpServletRequest httpServletRequest, String returnUrl, String transactionId) {
@@ -35,8 +39,7 @@ public class StripeCommercePaymentRequest extends CommercePaymentRequest {
 		super(
 			amount, cancelUrl, commerceOrderId, locale, returnUrl,
 			transactionId);
-		System.out.println("stripe payment request: " + returnUrl);
-		System.out.println("stripe payment request: " + httpServletRequest.toString());
+
 		_stripeSessionId = sessionId;
 	
 		_httpServletRequest = httpServletRequest;

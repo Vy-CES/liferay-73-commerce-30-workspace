@@ -27,7 +27,6 @@ public interface StripeCommercePaymentMethodConstants {
 	
 	public static final String STRIPE_SESSION_ID = "stripeSessionId";
 
-
 	public static final String AUTHORIZATION_STATE_COMPLETED = "completed";
 
 	public static final String AUTHORIZATION_STATE_CREATED = "created";

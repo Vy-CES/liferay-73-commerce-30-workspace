@@ -85,9 +85,6 @@ public class CompletePaymentStripeServlet extends HttpServlet {
 			String redirect = ParamUtil.getString(
 				httpServletRequest, "redirect");
 			
-			String sesstionId =  ParamUtil.getString(
-					httpServletRequest, StripeCommercePaymentMethodConstants.STRIPE_SESSION_ID);
-			
 			if (cancel) {
 				_commercePaymentEngine.cancelPayment(
 					commerceOrder.getCommerceOrderId(), null,
