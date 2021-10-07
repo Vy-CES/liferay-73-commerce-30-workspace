@@ -183,8 +183,10 @@ public class KolanotInvoiceDisplayContext extends KolanotInvoiceBaseDisplayConte
 			Iterator<CommerceOrder> iter = accountOrders.iterator();
 			while(iter.hasNext()){
 				CommerceOrder order = iter.next();
-
-			    if(order.getOrderStatus() == CommerceOrderConstants.ORDER_STATUS_PENDING || Validator.isNull(order.getTransactionId())) {
+				
+				System.out.println("get order status: " + order.getOrderStatus());
+				System.out.println("order status constant: " + CommerceOrderConstants.ORDER_STATUS_PENDING);
+			    if(order.getOrderStatus() == CommerceOrderConstants.ORDER_STATUS_PENDING) {
 			    	pendingOrders.add(order);
 			    }
 			}

@@ -25,6 +25,7 @@ import com.liferay.commerce.account.service.CommerceAccountLocalService;
 import com.liferay.commerce.constants.CommerceOrderConstants;
 import com.liferay.commerce.model.CommerceOrder;
 import com.liferay.commerce.model.CommerceOrderPayment;
+import com.liferay.commerce.order.engine.CommerceOrderEngine;
 import com.liferay.commerce.service.CommerceOrderLocalService;
 import com.liferay.commerce.service.CommerceOrderPaymentLocalService;
 import com.liferay.portal.aop.AopService;
@@ -139,9 +140,11 @@ public class KolanotInvoiceLocalServiceImpl
 			_commerceOrderPaymentService.updateCommerceOrderPayment(payment);
 		}
 
-//		linkedOrder.setStatus(CommerceOrderConstants.ORDER_STATUS_PROCESSING);
 		linkedOrder.setCommercePaymentMethodKey("stripe");
-
+		linkedOrder = _commerceOrderEngine.transitionCommerceOrder(linkedOrder, CommerceOrderConstants.ORDER_STATUS_PROCESSING, serviceContext.getUserId());
+		//linkedOrder.setStatus(CommerceOrderConstants.ORDER_STATUS_PROCESSING);
+		
+		System.out.println("commerce order: " + linkedOrder.toString());
 		_commerceOrderLocalService.updateCommerceOrder(linkedOrder);
 
 		return invoice;
@@ -245,6 +248,9 @@ public class KolanotInvoiceLocalServiceImpl
 
 	@Reference
 	private CommerceOrderLocalService _commerceOrderLocalService;
+
+	@Reference
+	private CommerceOrderEngine _commerceOrderEngine;
 
 	@Reference
 	private CommerceOrderPaymentLocalService _commerceOrderPaymentService;
